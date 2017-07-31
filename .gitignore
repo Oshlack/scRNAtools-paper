@@ -10,7 +10,7 @@ analysis/docs
 analysis/*.html
 
 # Data directory
-data
+#data
 
 # Output files
 output

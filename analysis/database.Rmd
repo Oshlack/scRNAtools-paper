@@ -71,7 +71,7 @@ The first plot we are going to make will look at the how the number of tools in
 the database has changed over time.
 
 ```{r plot-date-totals}
-tools %>%
+totals.plot <- tools %>%
     select(Date = Added, PubDate) %>%
     group_by(Date = as.Date(Date)) %>%
     summarise(Count = n(), PubCount = sum(!is.na(PubDate))) %>%
@@ -80,7 +80,7 @@ tools %>%
     geom_line(size = 2) +
     xlab("Date") +
     ylab("Number of tools") +
-    ggtitle("Number of tools over time") +
+    ggtitle("Increase in tools over time") +
     theme_cowplot() +
     theme(plot.title = element_text(size = 20, hjust = 0.4),
           axis.text = element_text(size = 12),
@@ -88,6 +88,8 @@ tools %>%
           legend.text = element_text(size = 12),
           legend.key.size = unit(25, "points")
     )
+
+totals.plot
 ```
 
 Publication status
@@ -97,7 +99,7 @@ Next we will look at the current publication status of the tools in the
 database.
 
 ```{r, plot-pub-status}
-tools %>%
+pub.plot <- tools %>%
     select(PubDate) %>%
     mutate(IsPre = PubDate == "PREPRINT") %>%
     mutate(IsPub = !is.na(PubDate) & !IsPre) %>%
@@ -116,9 +118,15 @@ tools %>%
     ggplot(aes(x = 1, weight = Count, fill = Type)) +
     geom_bar(width = 1, position = "stack") +
     coord_polar(theta = "y") +
-    geom_text(aes(x = 1.25, y = Midpoint, label = Label), size = 6) +
+    geom_text(aes(x = 1.8, y = Midpoint, label = Label, colour = Type),
+              size = 6) +
+    ggtitle("Publication status") +
     theme_nothing() +
-    theme(legend.position = "none")
+    theme(plot.title = element_text(size = 20),
+          legend.position = "none"
+    )
+
+pub.plot
 ```
 
 Licenses
@@ -127,7 +135,7 @@ Licenses
 We can produce a similar plot of the licenses that are used.
 
 ```{r plot-licenses}
-tools %>%
+license.plot <- tools %>%
     select(License) %>%
     mutate(IsGPL = str_detect(License, "GPL"),
            IsBSD = str_detect(License, "BSD"),
@@ -155,10 +163,15 @@ tools %>%
     ggplot(aes(x = 1, weight = Count, fill = License)) +
     geom_bar(width = 1, position = "stack") +
     coord_polar(theta = "y") +
-    geom_text(aes(x = 1.7, y = 123 - Midpoint, label = Label,
+    geom_text(aes(x = 1.75, y = nrow(tools) - Midpoint, label = Label,
                   colour = License), size = 6) +
+    ggtitle("Software licenses") +
     theme_nothing() +
-    theme(legend.position = "none")
+    theme(plot.title = element_text(size = 20),
+          legend.position = "none"
+    )
+
+license.plot
 ```
 
 Platforms
@@ -168,7 +181,7 @@ Another thing we are interested in is which programming languages/platforms each
 of the tools use.
 
 ```{r plot-platforms}
-tools %>%
+platforms.plot <- tools %>%
     select(Platform) %>%
     mutate(IsR = str_detect(Platform, "R"),
            IsPython = str_detect(Platform, "Python"),
@@ -197,6 +210,8 @@ tools %>%
           plot.title = element_text(size = 20, hjust = 0.4),
           axis.text = element_text(size = 12)
     )
+
+platforms.plot
 ```
 
 Categories
@@ -207,7 +222,7 @@ what they can do. This plot will show the percentage of tools that fall into
 each category.
 
 ```{r plot-categories}
-tools %>%
+cats.plot <- tools %>%
     summarise_at(9:35, sum) %>%
     gather(key = Category, value = Count) %>%
     arrange(-Count) %>%
@@ -226,8 +241,31 @@ tools %>%
           axis.text = element_text(size = 12),
           axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
     )
+
+cats.plot
 ```
 
+Panel
+=====
+
+Now let's put all the plots together into a panel.
+
+```{r make-panel, fig.height = 14}
+sub1 <- plot_grid(totals.plot, pub.plot, nrow = 1, ncol = 2,
+                  labels = c("A", "B"))
+sub2 <- plot_grid(license.plot, platforms.plot, nrow = 1, ncol = 2,
+                  labels = c("C", "D"))
+sub3 <- plot_grid(cats.plot, nrow = 1, ncol = 1, labels = c("E"))
+
+panel <- plot_grid(sub1, sub2, sub3, nrow = 3, ncol = 1)
+
+panel
+
+save_plot("../figures/analysis_panel.png", panel, ncol = 2, nrow = 3,
+          base_height = 6)
+save_plot("../figures/analysis_panel.pdf", panel, ncol = 2, nrow = 3,
+          base_height = 6)
+```
 
 Session info
 ============

@@ -1,0 +1,237 @@
+---
+title: "Database analysis"
+author: "Luke Zappia"
+date: '`r Sys.Date()`'
+output: html_document
+---
+
+Code version: `r system("git log -1 --format=oneline | cut -d' ' -f1", intern = TRUE)`
+
+```{r knitr, include = FALSE}
+DOCNAME = "template"
+knitr::opts_chunk$set(autodep        = TRUE,
+                      cache          = TRUE,
+                      cache.path     = paste0("cache/", DOCNAME, "/"),
+                      cache.comments = TRUE,
+                      echo           = FALSE,
+                      error          = FALSE,
+                      fig.align      = "center",
+                      fig.path       = paste0("figures/", DOCNAME, "/"),
+                      fig.width      = 10,
+                      fig.height     = 8,
+                      dev            = c('svg', 'png'),
+                      message        = FALSE,
+                      warning        = FALSE)
+```
+
+```{r libaries}
+# Plotting
+library("cowplot")
+
+# Strings
+library("stringr")
+
+# Tidyverse
+library("tidyverse")
+```
+
+```{r source, cache = FALSE}
+
+```
+
+Introduction
+============
+
+In this file we are going to do some analysis of the entries in 
+`single_cell_software.csv` to give us an overview of the tools in the 
+`scRNA-tools` database.
+
+```{r load}
+tools <- read_csv("../data/single_cell_software.csv",
+                  col_types = cols(
+                      .default = col_logical(),
+                      Name = col_character(),
+                      Platform = col_character(),
+                      DOI = col_character(),
+                      PubDate = col_character(),
+                      Code = col_character(),
+                      Description = col_character(),
+                      License = col_character(),
+                      Added = col_date(format = ""),
+                      Updated = col_date(format = "")
+                  ))
+
+glimpse(tools)
+```
+
+Tools over time
+===============
+
+The first plot we are going to make will look at the how the number of tools in
+the database has changed over time.
+
+```{r plot-date-totals}
+tools %>%
+    select(Date = Added, PubDate) %>%
+    group_by(Date = as.Date(Date)) %>%
+    summarise(Count = n(), PubCount = sum(!is.na(PubDate))) %>%
+    mutate(Total = cumsum(Count)) %>%
+    ggplot(aes(x = Date, y = Total)) +
+    geom_line(size = 2) +
+    xlab("Date") +
+    ylab("Number of tools") +
+    ggtitle("Number of tools over time") +
+    theme_cowplot() +
+    theme(plot.title = element_text(size = 20, hjust = 0.4),
+          axis.text = element_text(size = 12),
+          legend.title = element_text(size = 14),
+          legend.text = element_text(size = 12),
+          legend.key.size = unit(25, "points")
+    )
+```
+
+Publication status
+==================
+
+Next we will look at the current publication status of the tools in the
+database.
+
+```{r, plot-pub-status}
+tools %>%
+    select(PubDate) %>%
+    mutate(IsPre = PubDate == "PREPRINT") %>%
+    mutate(IsPub = !is.na(PubDate) & !IsPre) %>%
+    mutate(IsNot = is.na(PubDate)) %>%
+    summarise(NotPublished = sum(IsNot),
+              Published = sum(IsPub, na.rm = TRUE),
+              Preprint = sum(IsPre, na.rm = TRUE)) %>%
+    gather(key = Type, value = Count) %>%
+    mutate(Type = factor(Type,
+                         levels = c("Preprint", "Published", "NotPublished"),
+                         labels = c("Preprint", "Published", "Not Published")),
+           Cumulative = cumsum(Count),
+           Midpoint = Cumulative - (Count / 2),
+           Label = paste0(Type, "\n",
+                          round(Count / sum(Count) * 100, 1), "%")) %>%
+    ggplot(aes(x = 1, weight = Count, fill = Type)) +
+    geom_bar(width = 1, position = "stack") +
+    coord_polar(theta = "y") +
+    geom_text(aes(x = 1.25, y = Midpoint, label = Label), size = 6) +
+    theme_nothing() +
+    theme(legend.position = "none")
+```
+
+Licenses
+========
+
+We can produce a similar plot of the licenses that are used.
+
+```{r plot-licenses}
+tools %>%
+    select(License) %>%
+    mutate(IsGPL = str_detect(License, "GPL"),
+           IsBSD = str_detect(License, "BSD"),
+           IsMIT = str_detect(License, "MIT"),
+           IsApache = str_detect(License, "Apache"),
+           IsArtistic = str_detect(License, "Artistic"),
+           IsUnknown = is.na(License),
+           IsOther = !(IsGPL | IsBSD | IsMIT | IsApache | IsArtistic | 
+                           IsUnknown)) %>%
+    summarise(Apache = sum(IsApache, na.rm = TRUE),
+              Artistic = sum(IsArtistic, na.rm = TRUE),
+              BSD = sum(IsBSD, na.rm = TRUE),
+              GPL = sum(IsGPL, na.rm = TRUE),
+              MIT = sum(IsMIT, na.rm = TRUE),
+              Other = sum(IsOther),
+              Unknown = sum(IsUnknown)) %>%
+    gather(key = License, value = Count) %>%
+    mutate(License = factor(License,
+                            levels = c("Apache", "Artistic", "BSD", "GPL",
+                                       "MIT", "Other", "Unknown")),
+           Cumulative = cumsum(Count),
+           Midpoint = Cumulative - (Count / 2),
+           Label = paste0(License, "\n",
+                          round(Count / sum(Count) * 100, 1), "%")) %>%
+    ggplot(aes(x = 1, weight = Count, fill = License)) +
+    geom_bar(width = 1, position = "stack") +
+    coord_polar(theta = "y") +
+    geom_text(aes(x = 1.7, y = 123 - Midpoint, label = Label,
+                  colour = License), size = 6) +
+    theme_nothing() +
+    theme(legend.position = "none")
+```
+
+Platforms
+=========
+
+Another thing we are interested in is which programming languages/platforms each
+of the tools use.
+
+```{r plot-platforms}
+tools %>%
+    select(Platform) %>%
+    mutate(IsR = str_detect(Platform, "R"),
+           IsPython = str_detect(Platform, "Python"),
+           IsMATLAB = str_detect(Platform, "MATLAB"),
+           IsCPP = str_detect(Platform, "C++"),
+           IsOther = !(IsR | IsPython | IsMATLAB | IsCPP)) %>%
+    summarise(R = sum(IsR),
+              Python = sum(IsPython),
+              MATLAB = sum(IsMATLAB),
+              CPP = sum(IsCPP),
+              Other = sum(IsOther)) %>%
+    gather(key = Platform, value = Count) %>%
+    mutate(Platform = factor(Platform,
+                             levels = c("R", "Python", "MATLAB", "CPP",
+                                        "Other"),
+                             labels = c("R", "Python", "MATLAB", "C++",
+                                        "Other"))) %>%
+    ggplot(aes(x = Platform, weight = Count, fill = Platform)) +
+    geom_bar(aes(y = (..count..) / sum(..count..))) +
+    scale_y_continuous(labels = scales::percent) +
+    ylab("Percentage of tools") +
+    ggtitle("Platforms used by analysis tools") +
+    theme_cowplot() +
+    theme(axis.title.x = element_blank(),
+          legend.position = "none",
+          plot.title = element_text(size = 20, hjust = 0.4),
+          axis.text = element_text(size = 12)
+    )
+```
+
+Categories
+==========
+
+The biggest part of the scRNA-tools database is categorising the tools based on
+what they can do. This plot will show the percentage of tools that fall into
+each category.
+
+```{r plot-categories}
+tools %>%
+    summarise_at(9:35, sum) %>%
+    gather(key = Category, value = Count) %>%
+    arrange(-Count) %>%
+    mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
+    mutate(Category = str_trim(Category)) %>%
+    mutate(Category = factor(Category, levels = Category)) %>%
+    ggplot(aes(x = Category, weight = Count, fill = Category)) +
+    geom_bar(aes(y = (..count..) / sum(..count..))) +
+    scale_y_continuous(labels = scales::percent) +
+    ylab("Percentage of tools") +
+    ggtitle("Analysis categories") +
+    theme_cowplot() +
+    theme(axis.title.x = element_blank(),
+          legend.position = "none",
+          plot.title = element_text(size = 20, hjust = 0.4),
+          axis.text = element_text(size = 12),
+          axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
+    )
+```
+
+
+Session info
+============
+
+```{r session-info, cache = FALSE}
+devtools::session_info()
+```

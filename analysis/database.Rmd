@@ -8,7 +8,7 @@ output: html_document
 Code version: `r system("git log -1 --format=oneline | cut -d' ' -f1", intern = TRUE)`
 
 ```{r knitr, include = FALSE}
-DOCNAME = "template"
+DOCNAME = "database"
 knitr::opts_chunk$set(autodep        = TRUE,
                       cache          = TRUE,
                       cache.path     = paste0("cache/", DOCNAME, "/"),

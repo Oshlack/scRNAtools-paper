@@ -17,5 +17,6 @@ output
 figures
 additional
 
-# Drafts
+# Manuscript
+*.docx
 drafts

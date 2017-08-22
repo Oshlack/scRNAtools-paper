@@ -46,6 +46,16 @@ library("tidyverse")
 
 ```
 
+```{r palette}
+pal <- c(pink = "#EC008C",    # Pink
+         blue = "#00ADEF",    # Blue
+         green = "#8DC63F",   # Green
+         teal = "#00B7C6",    # Teal
+         orange = "#F47920",  # Orange
+         purple = "#7A52C7")  # Purple
+```
+
+
 Introduction
 ============
 
@@ -84,7 +94,7 @@ totals.plot <- tools %>%
     summarise(Count = n(), PubCount = sum(!is.na(PubDate))) %>%
     mutate(Total = cumsum(Count)) %>%
     ggplot(aes(x = Date, y = Total)) +
-    geom_line(size = 2) +
+    geom_line(size = 2, colour = pal["purple"]) +
     xlab("Date") +
     ylab("Number of tools") +
     ggtitle("Increase in tools over time") +
@@ -124,6 +134,8 @@ pub.plot <- tools %>%
     coord_polar(theta = "y") +
     geom_text(aes(x = 1.8, y = Midpoint, label = Label, colour = Type),
               size = 6) +
+    scale_fill_manual(values = unname(pal)) +
+    scale_colour_manual(values = unname(pal)) +
     ggtitle("Publication status") +
     theme_nothing() +
     theme(plot.title = element_text(size = 20),
@@ -169,6 +181,8 @@ license.plot <- tools %>%
     coord_polar(theta = "y") +
     geom_text(aes(x = 1.75, y = nrow(tools) - Midpoint, label = Label,
                   colour = License), size = 6) +
+    scale_fill_manual(values = c(unname(pal), "#999999")) +
+    scale_colour_manual(values = c(unname(pal), "#999999")) +
     ggtitle("Software licenses") +
     theme_nothing() +
     theme(plot.title = element_text(size = 20),
@@ -206,6 +220,7 @@ platforms.plot <- tools %>%
     ggplot(aes(x = Platform, weight = Count, fill = Platform)) +
     geom_bar(aes(y = (..count..) / sum(..count..))) +
     scale_y_continuous(labels = scales::percent) +
+    scale_fill_manual(values = unname(pal)) +
     ylab("Percentage of tools") +
     ggtitle("Platforms used by analysis tools") +
     theme_cowplot() +
@@ -282,7 +297,7 @@ cats.tools.plot <- tools %>%
     group_by(Name) %>%
     summarise(Count = sum(TF)) %>%
     ggplot(aes(x = factor(Count, levels = 1:14))) +
-    geom_bar() +
+    geom_bar(fill = pal["purple"]) +
     scale_x_discrete(drop = FALSE) +
     ggtitle("Number of categories per tool") +
     xlab("Number of categories") +
@@ -349,8 +364,9 @@ cats.time.plot <- tools.combined %>%
     mutate(Prop = Count / sum(Count)) %>%
     ggplot(aes(x = Category, y = Prop, colour = Subset)) +
     geom_point(size = 4) +
-    scale_color_discrete(name = "Date added",
-                         labels = c("After 2016-10-01", "Before 2016-10-01")) +
+    scale_color_manual(name = "Date added",
+                       labels = c("After 2016-10-01", "Before 2016-10-01"),
+                       values = unname(pal)) +
     scale_y_continuous(labels = scales::percent) +
     coord_flip() +
     ylab("Percentage of tools") +
@@ -368,7 +384,7 @@ cats.time.plot <- tools.combined %>%
 cats.time.plot
 ```
 
-```{r plot-cats-tool}
+```{r plot-cats-tool-time}
 cats.tools.time.plot <- tools.combined %>%
     filter(Subset != "All") %>%
     select(Name, Subset, 8:35) %>%
@@ -384,8 +400,9 @@ cats.tools.time.plot <- tools.combined %>%
     mutate(Prop = Count / sum(Count)) %>%
     ggplot(aes(x = factor(Cats, levels = 1:14), y = Prop, fill = Subset)) +
     geom_bar(stat = "identity", position = "dodge") +
-    scale_fill_discrete(name = "Date added",
-                         labels = c("After 2016-10-01", "Before 2016-10-01")) +
+    scale_fill_manual(name = "Date added",
+                      labels = c("After 2016-10-01", "Before 2016-10-01"),
+                      values = unname(pal)) +
     scale_y_continuous(labels = scales::percent) +
     ggtitle("Categories per tool") +
     xlab("Number of categories") +

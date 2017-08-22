@@ -243,15 +243,17 @@ This plot will show the percentage of tools that fall into each category.
 ```{r plot-categories}
 phase.cols <- c(brewer.pal(5, "Set1"), "#999999")
 
-cats.plot <- tools %>%
+cat.counts <- tools %>%
     summarise_at(8:35, sum) %>%
     gather(key = Category, value = Count) %>%
     arrange(-Count) %>%
     left_join(cats, by = "Category") %>%
     mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
     mutate(Category = str_trim(Category)) %>%
-    mutate(Category = factor(Category, levels = Category)) %>%
-    ggplot(aes(x = Category, weight = Count, fill = Phase)) +
+    mutate(Category = factor(Category, levels = Category))
+
+cats.plot <- ggplot(cat.counts,
+                    aes(x = Category, weight = Count, fill = Phase)) +
     geom_bar(aes(y = (..count..) / sum(..count..))) +
     scale_y_continuous(labels = scales::percent) +
     scale_fill_manual(values = phase.cols) +
@@ -314,6 +316,56 @@ save_plot("../figures/analysis_panel.png", panel, ncol = 2, nrow = 3,
           base_height = 6)
 save_plot("../figures/analysis_panel.pdf", panel, ncol = 2, nrow = 3,
           base_height = 6)
+```
+
+Then vs now
+===========
+
+We are also interested in how the database have changed over time.
+
+```{r subset-tools}
+tools.old <- tools %>%
+    filter(Added < "2016-10-01") %>%
+    mutate(Subset = "Old")
+tools.new <- tools %>%
+    filter(Added >= "2016-10-01") %>%
+    mutate(Subset = "New")
+tools.all <- mutate(tools, Subset = "All")
+
+tools.combined <- bind_rows(tools.all, tools.old, tools.new)
+```
+
+```{r plot-categories-time}
+cats.time.plot <- tools.combined %>%
+    filter(Subset != "All") %>%
+    group_by(Subset) %>%
+    summarise_at(8:35, sum) %>%
+    gather(key = Category, value = Count, -Subset) %>%
+    mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
+    mutate(Category = str_trim(Category)) %>%
+    mutate(Category = factor(Category,
+                             levels = rev(levels(cat.counts$Category)))) %>%
+    group_by(Subset) %>%
+    mutate(Prop = Count / sum(Count)) %>%
+    ggplot(aes(x = Category, y = Prop, colour = Subset)) +
+    geom_point(size = 4) +
+    scale_color_discrete(name = "Date added",
+                         labels = c("After 2016-10-01", "Before 2016-10-01")) +
+    scale_y_continuous(labels = scales::percent) +
+    coord_flip() +
+    ylab("Percentage of tools") +
+    ggtitle("Analysis categories") +
+    theme_cowplot() +
+    theme(axis.title.y = element_blank(),
+          legend.position = c(0.7, 0.2),
+          legend.title = element_text(size = 14),
+          legend.text = element_text(size = 12),
+          legend.key.size = unit(25, "points"),
+          plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12),
+    )
+
+cats.time.plot
 ```
 
 Session info

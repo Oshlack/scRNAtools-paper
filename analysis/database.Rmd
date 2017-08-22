@@ -89,11 +89,8 @@ totals.plot <- tools %>%
     ylab("Number of tools") +
     ggtitle("Increase in tools over time") +
     theme_cowplot() +
-    theme(plot.title = element_text(size = 20, hjust = 0.4),
-          axis.text = element_text(size = 12),
-          legend.title = element_text(size = 14),
-          legend.text = element_text(size = 12),
-          legend.key.size = unit(25, "points")
+    theme(plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12)
     )
 
 totals.plot
@@ -214,7 +211,7 @@ platforms.plot <- tools %>%
     theme_cowplot() +
     theme(axis.title.x = element_blank(),
           legend.position = "none",
-          plot.title = element_text(size = 20, hjust = 0.4),
+          plot.title = element_text(size = 20),
           axis.text = element_text(size = 12)
     )
 
@@ -247,7 +244,7 @@ This plot will show the percentage of tools that fall into each category.
 phase.cols <- c(brewer.pal(5, "Set1"), "#999999")
 
 cats.plot <- tools %>%
-    summarise_at(9:35, sum) %>%
+    summarise_at(8:35, sum) %>%
     gather(key = Category, value = Count) %>%
     arrange(-Count) %>%
     left_join(cats, by = "Category") %>%
@@ -263,12 +260,37 @@ cats.plot <- tools %>%
     theme_cowplot() +
     theme(axis.title.x = element_blank(),
           legend.position = "right",
-          plot.title = element_text(size = 20, hjust = 0.4),
+          legend.title = element_text(size = 14),
+          legend.text = element_text(size = 12),
+          legend.key.size = unit(25, "points"),
+          plot.title = element_text(size = 20),
           axis.text = element_text(size = 12),
           axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
     )
 
 cats.plot
+```
+
+We can also look at the number of categories per tool.
+
+```{r plot-cats-tool}
+cats.tools.plot <- tools %>%
+    select(Name, 8:35) %>%
+    gather(key = Category, value = TF, -Name) %>%
+    group_by(Name) %>%
+    summarise(Count = sum(TF)) %>%
+    ggplot(aes(x = factor(Count, levels = 1:14))) +
+    geom_bar() +
+    scale_x_discrete(drop = FALSE) +
+    ggtitle("Number of categories per tool") +
+    xlab("Number of categories") +
+    ylab("Number of tools") +
+    theme_cowplot() +
+    theme(plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12)
+    )
+
+cats.tools.plot
 ```
 
 Panel
@@ -282,8 +304,9 @@ sub1 <- plot_grid(totals.plot, pub.plot, nrow = 1, ncol = 2,
 sub2 <- plot_grid(license.plot, platforms.plot, nrow = 1, ncol = 2,
                   labels = c("C", "D"))
 sub3 <- plot_grid(cats.plot, nrow = 1, ncol = 1, labels = c("E"))
+sub4 <- plot_grid(cats.tools.plot, nrow = 1, ncol = 1, labels = c("F"))
 
-panel <- plot_grid(sub1, sub2, sub3, nrow = 3, ncol = 1)
+panel <- plot_grid(sub1, sub2, sub3, sub4, nrow = 4, ncol = 1)
 
 panel
 

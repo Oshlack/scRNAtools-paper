@@ -368,6 +368,37 @@ cats.time.plot <- tools.combined %>%
 cats.time.plot
 ```
 
+```{r plot-cats-tool}
+cats.tools.time.plot <- tools.combined %>%
+    filter(Subset != "All") %>%
+    select(Name, Subset, 8:35) %>%
+    gather(key = Category, value = TF, -Name, -Subset) %>%
+    group_by(Name, Subset) %>%
+    summarise(Cats = sum(TF)) %>%
+    ungroup() %>%
+    select(-Name) %>%
+    group_by(Subset, Cats) %>%
+    mutate(Count = n()) %>%
+    unique() %>%
+    group_by(Subset) %>%
+    mutate(Prop = Count / sum(Count)) %>%
+    ggplot(aes(x = factor(Cats, levels = 1:14), y = Prop, fill = Subset)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    scale_fill_discrete(name = "Date added",
+                         labels = c("After 2016-10-01", "Before 2016-10-01")) +
+    scale_y_continuous(labels = scales::percent) +
+    ggtitle("Categories per tool") +
+    xlab("Number of categories") +
+    ylab("Percentage of tools") +
+    theme_cowplot() +
+    theme(plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12),
+          legend.position = c(0.7, 0.7),
+    )
+
+cats.tools.time.plot
+```
+
 Session info
 ============
 

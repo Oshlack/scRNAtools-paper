@@ -339,30 +339,148 @@ Then vs now
 We are also interested in how the database have changed over time.
 
 ```{r subset-tools}
-tools.old <- tools %>%
-    filter(Added < "2016-10-01") %>%
-    mutate(Subset = "Old")
-tools.new <- tools %>%
-    filter(Added >= "2016-10-01") %>%
-    mutate(Subset = "New")
-tools.all <- mutate(tools, Subset = "All")
+tools <- tools %>%
+    mutate(IsOld = Added < "2016-10-01")
+```
 
-tools.combined <- bind_rows(tools.all, tools.old, tools.new)
+```{r, plot-pub-status-time}
+pub.plot.time <- tools %>%
+    group_by(IsOld) %>%
+    select(PubDate, IsOld) %>%
+    mutate(IsPre = PubDate == "PREPRINT") %>%
+    mutate(IsPub = !is.na(PubDate) & !IsPre) %>%
+    mutate(IsNot = is.na(PubDate)) %>%
+    summarise(NotPublished = sum(IsNot),
+              Published = sum(IsPub, na.rm = TRUE),
+              Preprint = sum(IsPre, na.rm = TRUE)) %>%
+    gather(key = Type, value = Count, -IsOld) %>%
+    group_by(IsOld) %>%
+    mutate(Prop = Count / sum(Count)) %>%
+    mutate(Type = factor(Type,
+                         levels = c("Preprint", "Published", "NotPublished"),
+                         labels = c("Preprint", "Published", "Not Published"))) %>%
+    ggplot(aes(x = Type, y = Prop, fill = IsOld)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    scale_fill_manual(name = "Date added",
+                      labels = c("After 2016-10-01", "Before 2016-10-01"),
+                      values = unname(pal)) +
+    scale_y_continuous(labels = scales::percent) +
+    ggtitle("Publication status") +
+    ylab("Percentage of tools") +
+    theme_cowplot() +
+    theme(legend.position = c(0.75, 0.85),
+          legend.title = element_text(size = 14),
+          legend.text = element_text(size = 12),
+          legend.key.size = unit(25, "points"),
+          plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12),
+          axis.title.x = element_blank()
+    )
+
+pub.plot.time
+```
+
+```{r plot-licenses-time}
+license.plot.time <- tools %>%
+    group_by(IsOld) %>%
+    select(License, IsOld) %>%
+    mutate(IsGPL = str_detect(License, "GPL"),
+           IsBSD = str_detect(License, "BSD"),
+           IsMIT = str_detect(License, "MIT"),
+           IsApache = str_detect(License, "Apache"),
+           IsArtistic = str_detect(License, "Artistic"),
+           IsUnknown = is.na(License),
+           IsOther = !(IsGPL | IsBSD | IsMIT | IsApache | IsArtistic | 
+                           IsUnknown)) %>%
+    summarise(Apache = sum(IsApache, na.rm = TRUE),
+              Artistic = sum(IsArtistic, na.rm = TRUE),
+              BSD = sum(IsBSD, na.rm = TRUE),
+              GPL = sum(IsGPL, na.rm = TRUE),
+              MIT = sum(IsMIT, na.rm = TRUE),
+              Other = sum(IsOther),
+              Unknown = sum(IsUnknown)) %>%
+    gather(key = License, value = Count, -IsOld) %>%
+    mutate(License = factor(License,
+                            levels = c("Apache", "Artistic", "BSD", "GPL",
+                                       "MIT", "Other", "Unknown"))) %>%
+    group_by(IsOld) %>%
+    mutate(Prop = Count / sum(Count)) %>%
+    ggplot(aes(x = License, y = Prop, fill = IsOld)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    scale_fill_manual(name = "Date added",
+                      labels = c("After 2016-10-01", "Before 2016-10-01"),
+                      values = unname(pal)) +
+    scale_y_continuous(labels = scales::percent) +
+    ggtitle("Software licenses") +
+    ylab("Percentage of tools") +
+    theme_cowplot() +
+    theme(legend.position = c(0.75, 0.85),
+          legend.title = element_text(size = 14),
+          legend.text = element_text(size = 12),
+          legend.key.size = unit(25, "points"),
+          plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12),
+          axis.title.x = element_blank()
+    )
+
+license.plot.time
+```
+
+```{r plot-platforms-time}
+platforms.plot.time <- tools %>%
+    group_by(IsOld) %>%
+    select(Platform, IsOld) %>%
+    mutate(IsR = str_detect(Platform, "R"),
+           IsPython = str_detect(Platform, "Python"),
+           IsMATLAB = str_detect(Platform, "MATLAB"),
+           IsCPP = str_detect(Platform, "C++"),
+           IsOther = !(IsR | IsPython | IsMATLAB | IsCPP)) %>%
+    summarise(R = sum(IsR),
+              Python = sum(IsPython),
+              MATLAB = sum(IsMATLAB),
+              CPP = sum(IsCPP),
+              Other = sum(IsOther)) %>%
+    gather(key = Platform, value = Count, -IsOld) %>%
+    mutate(Platform = factor(Platform,
+                             levels = c("R", "Python", "MATLAB", "CPP",
+                                        "Other"),
+                             labels = c("R", "Python", "MATLAB", "C++",
+                                        "Other"))) %>%
+    group_by(IsOld) %>%
+    mutate(Prop = Count / sum(Count)) %>%
+    ggplot(aes(x = Platform, weight = Prop, fill = IsOld)) +
+    geom_bar(position = "dodge") +
+    scale_y_continuous(labels = scales::percent) +
+    scale_fill_manual(name = "Date added",
+                      labels = c("After 2016-10-01", "Before 2016-10-01"),
+                      values = unname(pal)) +
+    ggtitle("Platforms used by analysis tools") +
+    ylab("Percentage of tools") +
+    theme_cowplot() +
+    theme(legend.position = c(0.75, 0.85),
+          legend.title = element_text(size = 14),
+          legend.text = element_text(size = 12),
+          legend.key.size = unit(25, "points"),
+          plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12),
+          axis.title.x = element_blank()
+    )
+
+platforms.plot.time
 ```
 
 ```{r plot-categories-time}
-cats.time.plot <- tools.combined %>%
-    filter(Subset != "All") %>%
-    group_by(Subset) %>%
+cats.time.plot <- tools %>%
+    group_by(IsOld) %>%
     summarise_at(8:35, sum) %>%
-    gather(key = Category, value = Count, -Subset) %>%
+    gather(key = Category, value = Count, -IsOld) %>%
     mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
     mutate(Category = str_trim(Category)) %>%
     mutate(Category = factor(Category,
                              levels = rev(levels(cat.counts$Category)))) %>%
-    group_by(Subset) %>%
+    group_by(IsOld) %>%
     mutate(Prop = Count / sum(Count)) %>%
-    ggplot(aes(x = Category, y = Prop, colour = Subset)) +
+    ggplot(aes(x = Category, y = Prop, colour = IsOld)) +
     geom_point(size = 4) +
     scale_color_manual(name = "Date added",
                        labels = c("After 2016-10-01", "Before 2016-10-01"),
@@ -378,27 +496,26 @@ cats.time.plot <- tools.combined %>%
           legend.text = element_text(size = 12),
           legend.key.size = unit(25, "points"),
           plot.title = element_text(size = 20),
-          axis.text = element_text(size = 12),
+          axis.text = element_text(size = 12)
     )
 
 cats.time.plot
 ```
 
 ```{r plot-cats-tool-time}
-cats.tools.time.plot <- tools.combined %>%
-    filter(Subset != "All") %>%
-    select(Name, Subset, 8:35) %>%
-    gather(key = Category, value = TF, -Name, -Subset) %>%
-    group_by(Name, Subset) %>%
+cats.tools.time.plot <- tools %>%
+    select(Name, IsOld, 8:35) %>%
+    gather(key = Category, value = TF, -Name, -IsOld) %>%
+    group_by(Name, IsOld) %>%
     summarise(Cats = sum(TF)) %>%
     ungroup() %>%
     select(-Name) %>%
-    group_by(Subset, Cats) %>%
+    group_by(IsOld, Cats) %>%
     mutate(Count = n()) %>%
     unique() %>%
-    group_by(Subset) %>%
+    group_by(IsOld) %>%
     mutate(Prop = Count / sum(Count)) %>%
-    ggplot(aes(x = factor(Cats, levels = 1:14), y = Prop, fill = Subset)) +
+    ggplot(aes(x = factor(Cats, levels = 1:14), y = Prop, fill = IsOld)) +
     geom_bar(stat = "identity", position = "dodge") +
     scale_fill_manual(name = "Date added",
                       labels = c("After 2016-10-01", "Before 2016-10-01"),
@@ -410,7 +527,7 @@ cats.tools.time.plot <- tools.combined %>%
     theme_cowplot() +
     theme(plot.title = element_text(size = 20),
           axis.text = element_text(size = 12),
-          legend.position = c(0.7, 0.7),
+          legend.position = c(0.7, 0.7)
     )
 
 cats.tools.time.plot

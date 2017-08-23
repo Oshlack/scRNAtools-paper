@@ -1,0 +1,74 @@
+---
+title: "Style"
+author: "Luke Zappia"
+date: "`r Sys.Date()`"
+output:
+    bookdown::word_document2:
+        reference_docx: style.docx
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+**Lorem ipsum** dolor *sit amet*. 
+
+- Single asterisks italicize text *like this*. 
+- Double asterisks embolden text **like this**.
+
+Start a new paragraph with a blank line separating paragraphs.
+
+- This will start an unordered list environment, and this will be the first item.
+- This will be a second item.
+- A third item.
+    - Four spaces and a dash create a sublist and this item in it.
+- The fourth item.
+    
+1. This starts a numerical list.
+2. This is no. 2 in the numerical list.
+    
+# This Starts A New Section
+## This is a Subsection
+### This is a Subsubsection
+#### This starts a Paragraph Block.
+
+> This will create a block quote, if you want one.
+
+Want a table? This will create one.
+
+Table Header  | Second Header
+------------- | -------------
+Table Cell    | Cell 2
+Cell 3        | Cell 4 
+
+Note that the separators *do not* have to be aligned.
+
+Want an image? This will do it.
+
+```{r example-figure, fig.cap = "An example figure"}
+par(mar = c(4, 4, 0.1, 0.1))
+plot(pressure, pch = 19, type = "b")
+```
+
+A normal paragraph.
+
+And here is a cross reference to Figure \@ref(fig:example-figure).
+
+Almost forgot about creating a footnote.[^1] This will do it again.[^2]
+
+[^1]: The first footnote
+[^2]: The second footnote
+
+Want to cite something? 
+
+- Find your biblatexkey in your bib file.
+- Put an @ before it, like @R-base, or whatever it is.
+- @R-base creates an in-text citation (e.g. Smith (1984) says...)
+- [@R-base] creates a parenthetical citation (Smith, 1984)
+
+That'll also automatically create a reference list at the end of the document.
+
+[In-text link to Google](http://google.com) as well.

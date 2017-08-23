@@ -44,6 +44,37 @@ library("jsonlite")
 library("tidyverse")
 ```
 
+```{r palette}
+pal <- c(pink = "#EC008C",    # Pink
+         blue = "#00ADEF",    # Blue
+         green = "#8DC63F",   # Green
+         teal = "#00B7C6",    # Teal
+         orange = "#F47920",  # Orange
+         purple = "#7A52C7")  # Purple
+```
+
+```{r load}
+tools <- read_csv("data/single_cell_software.csv",
+                  col_types = cols(
+                      .default = col_logical(),
+                      Name = col_character(),
+                      Platform = col_character(),
+                      DOI = col_character(),
+                      PubDate = col_character(),
+                      Code = col_character(),
+                      Description = col_character(),
+                      License = col_character(),
+                      Added = col_date(format = ""),
+                      Updated = col_date(format = "")
+                  )) %>%
+    mutate(IsOld = Added < "2016-10-01")
+
+cats <- read_json("data/descriptions.json", simplifyVector = TRUE) %>%
+    mutate(Phase = factor(Phase,
+                          levels = c("Phase 1", "Phase 2", "Phase 3", "Phase 4",
+                                     "Multiple", "Other")))
+```
+
 # Abstract
 
 # Keywords
@@ -94,10 +125,284 @@ platform they use, details of any related publication, links to the source code
 and the associated software license. Tools are also categorised according to the
 tasks they are able to perform.
 
-**Tools over time**
-**Publication status**
-**Licenses**
-**Platforms**
+```{r plot-tools-over-time}
+date.totals <- tools %>%
+    select(Date = Added) %>%
+    group_by(Date = as.Date(Date)) %>%
+    summarise(Count = n()) %>%
+    mutate(Total = cumsum(Count))
+
+totals.plot <- ggplot(date.totals, aes(x = Date, y = Total)) +
+    geom_line(size = 2, colour = pal["purple"]) +
+    xlab("Date") +
+    ylab("Number of tools") +
+    ggtitle("Increase in tools over time") +
+    theme_cowplot() +
+    theme(plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12)
+    )
+
+ggsave("figures/tools_over_time.png", totals.plot, height = 5)
+ggsave("figures/tools_over_time.pdf", totals.plot, height = 5)
+```
+
+```{r tools-over-time}
+include_graphics("figures/tools_over_time.png")
+```
+
+```{r plot-publication-status}
+pub.plot <- tools %>%
+    select(PubDate) %>%
+    mutate(IsPre = PubDate == "PREPRINT") %>%
+    mutate(IsPub = !is.na(PubDate) & !IsPre) %>%
+    mutate(IsNot = is.na(PubDate)) %>%
+    summarise(NotPublished = sum(IsNot),
+              Published = sum(IsPub, na.rm = TRUE),
+              Preprint = sum(IsPre, na.rm = TRUE)) %>%
+    gather(key = Type, value = Count) %>%
+    mutate(Type = factor(Type,
+                         levels = c("Preprint", "Published", "NotPublished"),
+                         labels = c("Preprint", "Published", "Not Published")),
+           Cumulative = cumsum(Count),
+           Midpoint = Cumulative - (Count / 2),
+           Label = paste0(Type, "\n",
+                          round(Count / sum(Count) * 100, 1), "%")) %>%
+    ggplot(aes(x = 1, weight = Count, fill = Type)) +
+    geom_bar(width = 1, position = "stack") +
+    coord_polar(theta = "y") +
+    geom_text(aes(x = 1.8, y = Midpoint, label = Label, colour = Type),
+              size = 6) +
+    scale_fill_manual(values = unname(pal)) +
+    scale_colour_manual(values = unname(pal)) +
+    ggtitle("Publication status") +
+    theme_nothing() +
+    theme(plot.title = element_text(size = 20),
+          legend.position = "none"
+    )
+
+pub.plot.time <- tools %>%
+    group_by(IsOld) %>%
+    select(PubDate, IsOld) %>%
+    mutate(IsPre = PubDate == "PREPRINT") %>%
+    mutate(IsPub = !is.na(PubDate) & !IsPre) %>%
+    mutate(IsNot = is.na(PubDate)) %>%
+    summarise(NotPublished = sum(IsNot),
+              Published = sum(IsPub, na.rm = TRUE),
+              Preprint = sum(IsPre, na.rm = TRUE)) %>%
+    gather(key = Type, value = Count, -IsOld) %>%
+    group_by(IsOld) %>%
+    mutate(Prop = Count / sum(Count)) %>%
+    mutate(Type = factor(Type,
+                         levels = c("Preprint", "Published", "NotPublished"),
+                         labels = c("Preprint", "Published", "Not Published"))) %>%
+    ggplot(aes(x = Type, y = Prop, fill = IsOld)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    scale_fill_manual(name = "Date added",
+                      labels = c("After 2016-10-01", "Before 2016-10-01"),
+                      values = unname(pal)) +
+    scale_y_continuous(labels = scales::percent) +
+    ggtitle("Publication status over time") +
+    ylab("Percentage of tools") +
+    theme_cowplot() +
+    theme(legend.position = c(0.75, 0.85),
+          legend.title = element_text(size = 14),
+          legend.text = element_text(size = 12),
+          legend.key.size = unit(25, "points"),
+          plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12),
+          axis.title.x = element_blank()
+    )
+
+panel <- plot_grid(pub.plot, pub.plot.time, nrow = 1, ncol = 2,
+                   labels = "AUTO")
+
+save_plot("figures/publication_status.png", panel, nrow = 1, ncol = 2,
+          base_height = 8)
+save_plot("figures/publication_status.pdf", panel, nrow = 1, ncol = 2,
+          base_height = 8)
+```
+
+```{r publication-status}
+include_graphics("figures/publication_status.png")
+```
+
+```{r plot-licenses}
+license.plot <- tools %>%
+    select(License) %>%
+    mutate(IsGPL = str_detect(License, "GPL"),
+           IsBSD = str_detect(License, "BSD"),
+           IsMIT = str_detect(License, "MIT"),
+           IsApache = str_detect(License, "Apache"),
+           IsArtistic = str_detect(License, "Artistic"),
+           IsUnknown = is.na(License),
+           IsOther = !(IsGPL | IsBSD | IsMIT | IsApache | IsArtistic | 
+                           IsUnknown)) %>%
+    summarise(Apache = sum(IsApache, na.rm = TRUE),
+              Artistic = sum(IsArtistic, na.rm = TRUE),
+              BSD = sum(IsBSD, na.rm = TRUE),
+              GPL = sum(IsGPL, na.rm = TRUE),
+              MIT = sum(IsMIT, na.rm = TRUE),
+              Other = sum(IsOther),
+              Unknown = sum(IsUnknown)) %>%
+    gather(key = License, value = Count) %>%
+    mutate(License = factor(License,
+                            levels = c("Apache", "Artistic", "BSD", "GPL",
+                                       "MIT", "Other", "Unknown")),
+           Cumulative = cumsum(Count),
+           Midpoint = Cumulative - (Count / 2),
+           Label = paste0(License, "\n",
+                          round(Count / sum(Count) * 100, 1), "%")) %>%
+    ggplot(aes(x = 1, weight = Count, fill = License)) +
+    geom_bar(width = 1, position = "stack") +
+    coord_polar(theta = "y") +
+    geom_text(aes(x = 1.75, y = nrow(tools) - Midpoint, label = Label,
+                  colour = License), size = 6) +
+    scale_fill_manual(values = c(unname(pal), "#999999")) +
+    scale_colour_manual(values = c(unname(pal), "#999999")) +
+    ggtitle("Software licenses") +
+    theme_nothing() +
+    theme(plot.title = element_text(size = 20),
+          legend.position = "none"
+    )
+
+license.plot.time <- tools %>%
+    group_by(IsOld) %>%
+    select(License, IsOld) %>%
+    mutate(IsGPL = str_detect(License, "GPL"),
+           IsBSD = str_detect(License, "BSD"),
+           IsMIT = str_detect(License, "MIT"),
+           IsApache = str_detect(License, "Apache"),
+           IsArtistic = str_detect(License, "Artistic"),
+           IsUnknown = is.na(License),
+           IsOther = !(IsGPL | IsBSD | IsMIT | IsApache | IsArtistic | 
+                           IsUnknown)) %>%
+    summarise(Apache = sum(IsApache, na.rm = TRUE),
+              Artistic = sum(IsArtistic, na.rm = TRUE),
+              BSD = sum(IsBSD, na.rm = TRUE),
+              GPL = sum(IsGPL, na.rm = TRUE),
+              MIT = sum(IsMIT, na.rm = TRUE),
+              Other = sum(IsOther),
+              Unknown = sum(IsUnknown)) %>%
+    gather(key = License, value = Count, -IsOld) %>%
+    mutate(License = factor(License,
+                            levels = c("Apache", "Artistic", "BSD", "GPL",
+                                       "MIT", "Other", "Unknown"))) %>%
+    group_by(IsOld) %>%
+    mutate(Prop = Count / sum(Count)) %>%
+    ggplot(aes(x = License, y = Prop, fill = IsOld)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    scale_fill_manual(name = "Date added",
+                      labels = c("After 2016-10-01", "Before 2016-10-01"),
+                      values = unname(pal)) +
+    scale_y_continuous(labels = scales::percent) +
+    ggtitle("Software licenses") +
+    ylab("Percentage of tools") +
+    theme_cowplot() +
+    theme(legend.position = c(0.75, 0.85),
+          legend.title = element_text(size = 14),
+          legend.text = element_text(size = 12),
+          legend.key.size = unit(25, "points"),
+          plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12),
+          axis.title.x = element_blank()
+    )
+
+panel <- plot_grid(license.plot, license.plot.time, nrow = 1, ncol = 2,
+                   labels = "AUTO")
+
+save_plot("figures/licenses.png", panel, nrow = 1, ncol = 2,
+          base_height = 8)
+save_plot("figures/licenses.pdf", panel, nrow = 1, ncol = 2,
+          base_height = 8)
+```
+
+```{r licenses}
+include_graphics("figures/licenses.png")
+```
+
+```{r plot-platforms}
+platforms.plot <- tools %>%
+    select(Platform) %>%
+    mutate(IsR = str_detect(Platform, "R"),
+           IsPython = str_detect(Platform, "Python"),
+           IsMATLAB = str_detect(Platform, "MATLAB"),
+           IsCPP = str_detect(Platform, "C++"),
+           IsOther = !(IsR | IsPython | IsMATLAB | IsCPP)) %>%
+    summarise(R = sum(IsR),
+              Python = sum(IsPython),
+              MATLAB = sum(IsMATLAB),
+              CPP = sum(IsCPP),
+              Other = sum(IsOther)) %>%
+    gather(key = Platform, value = Count) %>%
+    mutate(Platform = factor(Platform,
+                             levels = c("R", "Python", "MATLAB", "CPP",
+                                        "Other"),
+                             labels = c("R", "Python", "MATLAB", "C++",
+                                        "Other"))) %>%
+    ggplot(aes(x = Platform, weight = Count, fill = Platform)) +
+    geom_bar(aes(y = (..count..) / sum(..count..))) +
+    scale_y_continuous(labels = scales::percent) +
+    scale_fill_manual(values = unname(pal)) +
+    ylab("Percentage of tools") +
+    ggtitle("Platforms used by analysis tools") +
+    theme_cowplot() +
+    theme(axis.title.x = element_blank(),
+          legend.position = "none",
+          plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12)
+    )
+
+platforms.plot.time <- tools %>%
+    group_by(IsOld) %>%
+    select(Platform, IsOld) %>%
+    mutate(IsR = str_detect(Platform, "R"),
+           IsPython = str_detect(Platform, "Python"),
+           IsMATLAB = str_detect(Platform, "MATLAB"),
+           IsCPP = str_detect(Platform, "C++"),
+           IsOther = !(IsR | IsPython | IsMATLAB | IsCPP)) %>%
+    summarise(R = sum(IsR),
+              Python = sum(IsPython),
+              MATLAB = sum(IsMATLAB),
+              CPP = sum(IsCPP),
+              Other = sum(IsOther)) %>%
+    gather(key = Platform, value = Count, -IsOld) %>%
+    mutate(Platform = factor(Platform,
+                             levels = c("R", "Python", "MATLAB", "CPP",
+                                        "Other"),
+                             labels = c("R", "Python", "MATLAB", "C++",
+                                        "Other"))) %>%
+    group_by(IsOld) %>%
+    mutate(Prop = Count / sum(Count)) %>%
+    ggplot(aes(x = Platform, weight = Prop, fill = IsOld)) +
+    geom_bar(position = "dodge") +
+    scale_y_continuous(labels = scales::percent) +
+    scale_fill_manual(name = "Date added",
+                      labels = c("After 2016-10-01", "Before 2016-10-01"),
+                      values = unname(pal)) +
+    ggtitle("Platforms used by analysis tools") +
+    ylab("Percentage of tools") +
+    theme_cowplot() +
+    theme(legend.position = c(0.75, 0.85),
+          legend.title = element_text(size = 14),
+          legend.text = element_text(size = 12),
+          legend.key.size = unit(25, "points"),
+          plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12),
+          axis.title.x = element_blank()
+    )
+
+panel <- plot_grid(platforms.plot, platforms.plot.time, nrow = 1, ncol = 2,
+                   labels = "AUTO")
+
+save_plot("figures/platforms.png", panel, nrow = 1, ncol = 2,
+          base_height = 8)
+save_plot("figures/platforms.pdf", panel, nrow = 1, ncol = 2,
+          base_height = 8)
+```
+
+```{r platforms}
+include_graphics("figures/platforms.png")
+```
 
 # Phases of scRNA-seq analysis
 
@@ -142,12 +447,200 @@ include_graphics("figures/gene_identification.png")
 
 ## Analysis tasks
 
-**Table**
-**Categories plot**
+```{r categories-table}
+cats %>%
+    mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
+    arrange(Phase) %>%
+    select(Phase, everything()) %>%
+    kable()
+```
+
+```{r plot-categories}
+phase.cols <- c(brewer.pal(5, "Set1"), "#999999")
+
+cat.counts <- tools %>%
+    summarise_at(8:35, sum) %>%
+    gather(key = Category, value = Count) %>%
+    arrange(-Count) %>%
+    mutate(Prop = Count / nrow(tools)) %>%
+    left_join(cats, by = "Category") %>%
+    mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
+    mutate(Category = str_trim(Category)) %>%
+    mutate(Category = factor(Category, levels = Category))
+
+cats.plot <- ggplot(cat.counts,
+                    aes(x = Category, weight = Prop, fill = Phase)) +
+    geom_bar() +
+    scale_y_continuous(labels = scales::percent) +
+    scale_fill_manual(values = phase.cols) +
+    ylab("Percentage of tools") +
+    ggtitle("Analysis categories") +
+    theme_cowplot() +
+    theme(axis.title.x = element_blank(),
+          legend.position = c(0.85, 0.75),
+          legend.title = element_text(size = 14),
+          legend.text = element_text(size = 12),
+          legend.key.size = unit(25, "points"),
+          plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12),
+          axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
+    )
+
+ggsave("figures/categories.png", cats.plot, height = 5)
+ggsave("figures/categories.pdf", cats.plot, height = 5)
+```
+
+```{r categories}
+include_graphics("figures/categories.png")
+```
+
+```{r plot-categories-time}
+cats.time.plot <- tools %>%
+    group_by(IsOld) %>%
+    mutate(Size = n()) %>%
+    group_by(IsOld, Size) %>%
+    summarise_at(8:35, sum) %>%
+    gather(key = Category, value = Count, -IsOld, -Size) %>%
+    mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
+    mutate(Category = str_trim(Category)) %>%
+    mutate(Category = factor(Category,
+                             levels = rev(levels(cat.counts$Category)))) %>%
+    group_by(IsOld) %>%
+    mutate(Prop = Count / Size) %>%
+    ggplot(aes(x = Category, y = Prop, colour = IsOld)) +
+    geom_point(size = 4) +
+    scale_color_manual(name = "Date added",
+                       labels = c("After 2016-10-01", "Before 2016-10-01"),
+                       values = unname(pal)) +
+    scale_y_continuous(labels = scales::percent) +
+    coord_flip() +
+    ylab("Percentage of tools") +
+    ggtitle("Analysis categories") +
+    theme_cowplot() +
+    theme(axis.title.y = element_blank(),
+          legend.position = c(0.7, 0.2),
+          legend.title = element_text(size = 14),
+          legend.text = element_text(size = 12),
+          legend.key.size = unit(25, "points"),
+          plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12)
+    )
+
+ggsave("figures/categories_time.png", cats.time.plot, height = 8)
+ggsave("figures/categories_time.pdf", cats.time.plot, height = 8)
+```
+
+```{r categories-time}
+include_graphics("figures/categories_time.png")
+```
+
+```{r plot-date-phases}
+phases.plot.date <- tools %>%
+    mutate(Phase1 = Quantification,
+           Phase2 = QualityControl | Normalisation | Imputation |
+               GeneFiltering | CellCycle,
+           Phase3 = Clustering | Classification | Pseudotime | RareCells |
+               StemCells,
+           Phase4 = DifferentialExpression | MarkerGenes | ExpressionPatterns |
+               VariableGenes | GeneSets | GeneNetworks,
+           Multiple = DimensionalityReduction | Visualisation | Interactive,
+           Other = Assembly | Transformation | Modality | AlternativeSplicing |
+               Variants | Haplotypes | AlleleSpecific | Simulation) %>%
+    select(Date = Added, Phase1, Phase2, Phase3, Phase4, Multiple, Other) %>%
+    gather(key = Phase, value = TF, -Date) %>%
+    filter(TF == TRUE) %>%
+    mutate(Phase = factor(Phase,
+                          levels = c("Phase1", "Phase2", "Phase3", "Phase4",
+                                     "Multiple", "Other"),
+                          labels = c("Phase 1", "Phase 2", "Phase 3", "Phase 4",
+                                     "Multiple", "Other"))) %>%
+    select(Date, Phase) %>%
+    group_by(Date, Phase) %>%
+    summarise(PhaseCount = n()) %>%
+    group_by(Phase) %>%
+    mutate(PhaseTotal = cumsum(PhaseCount)) %>%
+    left_join(date.totals, by = "Date") %>%
+    mutate(Prop = PhaseTotal / Total) %>%
+    ggplot(aes(x = Date, y = Prop, colour = Phase)) +
+    geom_line(size = 2) +
+    scale_y_continuous(labels = scales::percent) +
+    scale_colour_manual(values = phase.cols) +
+    xlab("Date") +
+    ylab("Percentage of tools") +
+    ggtitle("Analysis phases over time") +
+    theme_cowplot() +
+    theme(plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12),
+          axis.title.x = element_blank(),
+          legend.position = "right"
+    )
+
+ggsave("figures/phases_date.png", phases.plot.date, height = 5)
+ggsave("figures/phases_date.pdf", phases.plot.date, height = 5)
+```
+
+```{r phases-over-time}
+include_graphics("figures/phases_date.png")
+```
 
 ## Pipelines, multi-task tools
 
-**Categories per tool**
+```{r plot-cats-tool}
+cats.tools.plot <- tools %>%
+    select(Name, 8:35) %>%
+    gather(key = Category, value = TF, -Name) %>%
+    group_by(Name) %>%
+    summarise(Count = sum(TF)) %>%
+    ggplot(aes(x = factor(Count, levels = 1:14))) +
+    geom_bar(fill = pal["purple"]) +
+    scale_x_discrete(drop = FALSE) +
+    ggtitle("Number of categories per tool") +
+    xlab("Number of categories") +
+    ylab("Number of tools") +
+    theme_cowplot() +
+    theme(plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12)
+    )
+
+cats.tools.time.plot <- tools %>%
+    select(Name, IsOld, 8:35) %>%
+    gather(key = Category, value = TF, -Name, -IsOld) %>%
+    group_by(Name, IsOld) %>%
+    summarise(Cats = sum(TF)) %>%
+    ungroup() %>%
+    select(-Name) %>%
+    group_by(IsOld, Cats) %>%
+    mutate(Count = n()) %>%
+    unique() %>%
+    group_by(IsOld) %>%
+    mutate(Prop = Count / sum(Count)) %>%
+    ggplot(aes(x = factor(Cats, levels = 1:14), y = Prop, fill = IsOld)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    scale_fill_manual(name = "Date added",
+                      labels = c("After 2016-10-01", "Before 2016-10-01"),
+                      values = unname(pal)) +
+    scale_y_continuous(labels = scales::percent) +
+    ggtitle("Categories per tool") +
+    xlab("Number of categories") +
+    ylab("Percentage of tools") +
+    theme_cowplot() +
+    theme(plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12),
+          legend.position = c(0.7, 0.7)
+    )
+
+panel <- plot_grid(cats.tools.plot, cats.tools.time.plot, nrow = 1, ncol = 2,
+                   labels = "AUTO")
+
+save_plot("figures/cats_per_tool.png", panel, nrow = 1, ncol = 2,
+          base_height = 8)
+save_plot("figures/cats_per_tool.pdf", panel, nrow = 1, ncol = 2,
+          base_height = 8)
+```
+
+```{r cats-per-tool}
+include_graphics("figures/cats_per_tool.png")
+```
 
 ## Other analyses
 

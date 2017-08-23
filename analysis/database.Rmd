@@ -88,12 +88,13 @@ The first plot we are going to make will look at the how the number of tools in
 the database has changed over time.
 
 ```{r plot-date-totals}
-totals.plot <- tools %>%
-    select(Date = Added, PubDate) %>%
+date.totals <- tools %>%
+    select(Date = Added) %>%
     group_by(Date = as.Date(Date)) %>%
-    summarise(Count = n(), PubCount = sum(!is.na(PubDate))) %>%
-    mutate(Total = cumsum(Count)) %>%
-    ggplot(aes(x = Date, y = Total)) +
+    summarise(Count = n()) %>%
+    mutate(Total = cumsum(Count))
+
+totals.plot <- ggplot(date.totals, aes(x = Date, y = Total)) +
     geom_line(size = 2, colour = pal["purple"]) +
     xlab("Date") +
     ylab("Number of tools") +
@@ -262,21 +263,22 @@ cat.counts <- tools %>%
     summarise_at(8:35, sum) %>%
     gather(key = Category, value = Count) %>%
     arrange(-Count) %>%
+    mutate(Prop = Count / nrow(tools)) %>%
     left_join(cats, by = "Category") %>%
     mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
     mutate(Category = str_trim(Category)) %>%
     mutate(Category = factor(Category, levels = Category))
 
 cats.plot <- ggplot(cat.counts,
-                    aes(x = Category, weight = Count, fill = Phase)) +
-    geom_bar(aes(y = (..count..) / sum(..count..))) +
+                    aes(x = Category, weight = Prop, fill = Phase)) +
+    geom_bar() +
     scale_y_continuous(labels = scales::percent) +
     scale_fill_manual(values = phase.cols) +
     ylab("Percentage of tools") +
     ggtitle("Analysis categories") +
     theme_cowplot() +
     theme(axis.title.x = element_blank(),
-          legend.position = "right",
+          legend.position = c(0.85, 0.75),
           legend.title = element_text(size = 14),
           legend.text = element_text(size = 12),
           legend.key.size = unit(25, "points"),
@@ -472,14 +474,16 @@ platforms.plot.time
 ```{r plot-categories-time}
 cats.time.plot <- tools %>%
     group_by(IsOld) %>%
+    mutate(Size = n()) %>%
+    group_by(IsOld, Size) %>%
     summarise_at(8:35, sum) %>%
-    gather(key = Category, value = Count, -IsOld) %>%
+    gather(key = Category, value = Count, -IsOld, -Size) %>%
     mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
     mutate(Category = str_trim(Category)) %>%
     mutate(Category = factor(Category,
                              levels = rev(levels(cat.counts$Category)))) %>%
     group_by(IsOld) %>%
-    mutate(Prop = Count / sum(Count)) %>%
+    mutate(Prop = Count / Size) %>%
     ggplot(aes(x = Category, y = Prop, colour = IsOld)) +
     geom_point(size = 4) +
     scale_color_manual(name = "Date added",
@@ -531,6 +535,50 @@ cats.tools.time.plot <- tools %>%
     )
 
 cats.tools.time.plot
+```
+
+```{r plot-date-phases}
+phases.plot.date <- tools %>%
+    mutate(Phase1 = Quantification,
+           Phase2 = QualityControl | Normalisation | Imputation |
+               GeneFiltering | CellCycle,
+           Phase3 = Clustering | Classification | Pseudotime | RareCells |
+               StemCells,
+           Phase4 = DifferentialExpression | MarkerGenes | ExpressionPatterns |
+               VariableGenes | GeneSets | GeneNetworks,
+           Multiple = DimensionalityReduction | Visualisation | Interactive,
+           Other = Assembly | Transformation | Modality | AlternativeSplicing |
+               Variants | Haplotypes | AlleleSpecific | Simulation) %>%
+    select(Date = Added, Phase1, Phase2, Phase3, Phase4, Multiple, Other) %>%
+    gather(key = Phase, value = TF, -Date) %>%
+    filter(TF == TRUE) %>%
+    mutate(Phase = factor(Phase,
+                          levels = c("Phase1", "Phase2", "Phase3", "Phase4",
+                                     "Multiple", "Other"),
+                          labels = c("Phase 1", "Phase 2", "Phase 3", "Phase 4",
+                                     "Multiple", "Other"))) %>%
+    select(Date, Phase) %>%
+    group_by(Date, Phase) %>%
+    summarise(PhaseCount = n()) %>%
+    group_by(Phase) %>%
+    mutate(PhaseTotal = cumsum(PhaseCount)) %>%
+    left_join(date.totals, by = "Date") %>%
+    mutate(Prop = PhaseTotal / Total) %>%
+    ggplot(aes(x = Date, y = Prop, colour = Phase)) +
+    geom_line(size = 2) +
+    scale_y_continuous(labels = scales::percent) +
+    scale_colour_manual(values = phase.cols) +
+    xlab("Date") +
+    ylab("Percentage of tools") +
+    ggtitle("Analysis phases over time") +
+    theme_cowplot() +
+    theme(plot.title = element_text(size = 20),
+          axis.text = element_text(size = 12),
+          axis.title.x = element_blank(),
+          legend.position = "right"
+    )
+
+phases.plot.date
 ```
 
 Session info

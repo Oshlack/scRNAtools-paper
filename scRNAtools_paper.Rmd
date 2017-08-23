@@ -1,0 +1,194 @@
+---
+title: "Trends in single-cell RNA-seq analysis tools"
+author:
+- Luke Zappia 
+- Belinda Phipson
+- Alicia Oshlack
+date: "`r Sys.Date()`"
+output: 
+    bookdown::word_document2:
+        reference_docx: style/style.docx
+bibliography: style/references.bib
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(autodep        = TRUE,
+                      cache          = FALSE,
+                      cache.path     = "cache/",
+                      cache.comments = TRUE,
+                      echo           = FALSE,
+                      error          = FALSE,
+                      fig.path       = "figures/",
+                      fig.width      = 10,
+                      fig.height     = 8,
+                      dev            = c('png', 'pdf'),
+                      message        = FALSE,
+                      warning        = FALSE)
+```
+
+```{r libaries}
+# Plotting
+library("cowplot")
+library("RColorBrewer")
+
+# Presentation
+library("knitr")
+
+# Strings
+library("stringr")
+
+# JSON
+library("jsonlite")
+
+# Tidyverse
+library("tidyverse")
+```
+
+# Abstract
+
+# Keywords
+
+# Introduction
+
+* scRNA-seq
+    * What is it?
+    * What is the history?
+    * What is it used for?
+    * How is it different to bulk?
+* Analysis
+    * Getting the data
+    * Quality control
+    * Clustering/psuedotime
+    * Gene identification
+    * Interpretation?
+
+Single-cell RNA-sequencing (scRNA-seq) has quickly become a tool of choice for 
+interrogating the transcriptome at the resolution of individual cells. Since the
+first protocols were published in 2009 the number of cells in scRNA-seq datasets
+has increased exponentially, outstripping Moore’s Law [Svensson 2017]. As well 
+as the size of datasets the number of studies has also increased rapidly. With 
+the availability of new data has come a demand for new analysis methods. Apart 
+from the scale scRNA-seq provides several challenges compared to RNA-seq 
+experiments of bulk samples. More specifically scRNA-seq data is extremely 
+sparse (there is no expression measured for most genes in most cells) and the 
+analysis approaches required are different, as the groups of interest are 
+usually not known in advance.
+
+Since August 2016 we have collated and categorised scRNA-seq analysis software 
+as it has become available. This database is now publically available at 
+www.scRNA-tools.org. Here we discuss the stages of scRNA-seq analysis and their 
+relationship to tools in the scRNA-tools database.
+
+# Overview of the scRNA-tools database
+
+* What is in the database?
+* How has it been collected?
+
+The scRNA-seq database contains information on software tools specifically
+designed for the analysis of scRNA-seq data. To be eligible to be included in
+the database software tools must be available for download and public use. This
+can be from a software package repository (such as Bioconductor, CRAN or PyPI),
+a code sharing website such as Github or directly from a private website.
+Various details of the tools are recorded such as the programming language or
+platform they use, details of any related publication, links to the source code
+and the associated software license. Tools are also categorised according to the
+tasks they are able to perform.
+
+**Tools over time**
+**Publication status**
+**Licenses**
+**Platforms**
+
+# Phases of scRNA-seq analysis
+
+A typical scRNA-seq analysis can be divided into various phases, each of which 
+consists of various tasks which can be completed using a variety of tools 
+[FIGURE]. The data acquisition phase takes the raw nucleotide sequences from the
+sequencing experiment and returns an matrix describing the expression of each 
+gene (rows) in each cell (columns). This phase consists of tasks common to bulk 
+RNA-seq experiments, such as alignment to a reference genome and quantification 
+of expression, but is often extended to handle Unique Molecular Identifiers 
+(UMIs). Once an expression matrix has been obtained it is vital to make sure it 
+is of quality. In the data cleaning phase quality control of cells is performed 
+as well as filtering of uninformative genes. Additional tasks may be performed 
+to normalise the data or impute missing values and exploratory analysis is often
+performed in this phase, such as viewing the datasets in reduced dimensions.
+
+The high-quality expression matrix is the focus of the next phases of analysis. 
+In Phase 3 cells are assigned, either to discrete groups via clustering or along
+a continuous trajectory from one cell type to another. As high-quality reference
+datasets become available it will also become feasible to classify cell directly
+into different cell types. Once cells have been assigned attention turns to 
+interpreting what those assignments mean. Identifying interesting genes, such as
+those that are differentially expressed across group, marker genes expressed in 
+a single group or genes that change expression along a trajectory, is the 
+typical way to do this.
+
+```{r analysis-phases, fig.cap = "Phases of the scRNA-seq analysis process. In Phase 1 (data acquisition) raw sequencing reads are converted into a gene by cell expression matrix. For many protocols this requires the assignment and de-duplication of Unique Molecular Identifiers (UMIs). The data is then cleaned (Phase 2) to remove low-quality cells and uninformative genes, resulting in a high-quality dataset for further analysis. Phase 3 assigns cells, either to distinct groups (clustering) or to a position on a pseudotime trajectory. Alternatively cells can be classified based on known cell types. Interesting genes (eg. differentially expressed, markers, highly variable) are then identified to explain these groups or paths (Phase 4)."}
+include_graphics("figures/phases_diagram.png")
+```
+
+While there are other approaches that could be taken to analyse scRNA-seq data
+these phases represent the most common path from raw sequencing reads to
+biological insight.
+
+```{r cell-assignment, fig.cap = "Strategies for assigning cells. Discrete groups of cells can be formed by clustering cells based on similar expression profiles or classifying them using reference datasets. Alternatively cells can be ordered along a trajectory from one cell type to another."}
+include_graphics("figures/cell_assignment.png")
+```
+
+```{r gene-identification, fig.cap = "Examples of interesting genes to identify. When working with discrete groups tools try to find genes that are differentially expressed across the groups or marker genes that are uniquely expressed in a single group. If cells have been ordered tools instead look for genes that change expression along the trajectory, for example genes that are highly expressed and the start and lowly expressed at the end."}
+include_graphics("figures/gene_identification.png")
+```
+
+## Analysis tasks
+
+**Table**
+**Categories plot**
+
+## Pipelines, multi-task tools
+
+**Categories per tool**
+
+## Other analyses
+
+# Discussion and conclusions
+
+* Where to from here?
+    * More tools
+    * Improvements and updates
+    * New tasks
+    * New datasets
+        * Integration
+    * New technologies
+    * Reference databases
+    
+# Methods
+
+# Declarations
+
+# Ethics
+
+Not applicable.
+
+# Availability of data and materials
+
+# Competing interests
+
+The authors declare no competing interests.
+
+# Funding
+
+Luke Zappia is supported by an Australian Government Research Training Program
+(RTP) Scholarship. Alicia Oshlack is supported through a National Health and
+Medical Research Council Career Development Fellowship APP1126157. MCRI is
+supported by the Victorian Government's Operational Infrastructure Support
+Program.
+
+# Authors' contributions
+
+# Acknowledgements
+
+# References
+
+# Additional files
+

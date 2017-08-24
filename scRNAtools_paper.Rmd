@@ -125,6 +125,8 @@ platform they use, details of any related publication, links to the source code
 and the associated software license. Tools are also categorised according to the
 tasks they are able to perform.
 
+* Increase in tools over time
+
 ```{r plot-tools-over-time}
 date.totals <- tools %>%
     select(Date = Added) %>%
@@ -146,9 +148,15 @@ ggsave("figures/tools_over_time.png", totals.plot, height = 5)
 ggsave("figures/tools_over_time.pdf", totals.plot, height = 5)
 ```
 
-```{r tools-over-time}
+```{r tools-over-time, fig.cap = "Increase in available scRNA-seq tools over time. Since the scRNA-seq tools database was started in August 2016 more than 50 new tools have been released."}
 include_graphics("figures/tools_over_time.png")
 ```
+
+## Publication status
+
+* Publication status
+* ~ half published, more as preprints
+* More older tools published, reflects publishing delay
 
 ```{r plot-publication-status}
 pub.plot <- tools %>%
@@ -222,7 +230,7 @@ save_plot("figures/publication_status.pdf", panel, nrow = 1, ncol = 2,
           base_height = 8)
 ```
 
-```{r publication-status}
+```{r publication-status, fig.cap = "Publication status of tools in the scRNA-tools database. Over half of the tools in the full database have been published in peer-revewied journals while another third are available as preprints (A). When stratified by publication date we see that the majority of tools added before October 2016 are published, while the majority of newer tools are available as preprints (B). The number of unpublished tools stays consistent around 10 percent."}
 include_graphics("figures/publication_status.png")
 ```
 
@@ -316,7 +324,7 @@ save_plot("figures/licenses.pdf", panel, nrow = 1, ncol = 2,
           base_height = 8)
 ```
 
-```{r licenses}
+```{r licenses, eval = FALSE}
 include_graphics("figures/licenses.png")
 ```
 
@@ -400,8 +408,28 @@ save_plot("figures/platforms.pdf", panel, nrow = 1, ncol = 2,
           base_height = 8)
 ```
 
-```{r platforms}
+```{r platforms, eval = FALSE}
 include_graphics("figures/platforms.png")
+```
+
+```{r plot-platforms-licenses}
+panel <- plot_grid(platforms.plot, license.plot, nrow = 1, ncol = 2,
+                   labels = "AUTO")
+
+save_plot("figures/platforms_licenses.png", panel, nrow = 1, ncol = 2,
+          base_height = 8)
+save_plot("figures/platforms_licenses.pdf", panel, nrow = 1, ncol = 2,
+          base_height = 8)
+```
+
+## Open-source
+
+* Most tools use (free) R or Python
+* Most released under open-source license
+* Some with no license...
+
+```{r platforms-licenses, fig.cap = "The open-source nature of scRNA-seq analysis tools. The majority of tools are available for either the R or Python programming lanuages (A). Most tools are released under a standard open-source software license, with variants of the GNU Public License (GPL) being the most common. However licenses could not be found for a large proportion of tools."}
+include_graphics("figures/platforms_licenses.png")
 ```
 
 # Phases of scRNA-seq analysis
@@ -448,11 +476,13 @@ include_graphics("figures/gene_identification.png")
 ## Analysis tasks
 
 ```{r categories-table}
+cap = "Descriptions of categories for tools in the scRNA-tools database"
+
 cats %>%
     mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
     arrange(Phase) %>%
     select(Phase, everything()) %>%
-    kable()
+    kable(caption = cap)
 ```
 
 ```{r plot-categories}
@@ -490,7 +520,11 @@ ggsave("figures/categories.png", cats.plot, height = 5)
 ggsave("figures/categories.pdf", cats.plot, height = 5)
 ```
 
-```{r categories}
+* Tools spread across categories
+* Common tasks and cell assignment most popular
+    * Reflects differences between bulk and single-cell
+
+```{r categories, fig.cap = "Categories of tools in the scRNA-tools database. Each tool can be assigned to multiple categories based on the tasks it can complete. Categories associated with multiple analysis phases (visualisation, dimensionality reduction) are the most common, followed by categories associated with the cell assignment phase (pseudotime, clustering)."}
 include_graphics("figures/categories.png")
 ```
 
@@ -530,7 +564,10 @@ ggsave("figures/categories_time.png", cats.time.plot, height = 8)
 ggsave("figures/categories_time.pdf", cats.time.plot, height = 8)
 ```
 
-```{r categories-time}
+* Decrease in psuedotime tools
+* Not really sure what to say about this...
+
+```{r categories-time, fig.cap = "Changes in analysis categories over time, comparing tools added before and after October 2016. There have been significant increases in the percentage of tools associated with visualisation, dimensionality reduction, quantification and simulation. Categories including expression patterns, pseudotime and interactivity have seen relative decreases."}
 include_graphics("figures/categories_time.png")
 ```
 
@@ -579,11 +616,13 @@ ggsave("figures/phases_date.png", phases.plot.date, height = 5)
 ggsave("figures/phases_date.pdf", phases.plot.date, height = 5)
 ```
 
-```{r phases-over-time}
+* Similar information to the last plot but summarised at a higher level
+
+```{r phases-over-time, fig.cap = "Changes in the percentage of tools associated with analysis phases over time. The percentage of tools involved in the data acquisition and data cleaning phases have increased, as have tools completed alternative analysis tasks. The gene identification phase has seen a relative decrease in the number of tools."}
 include_graphics("figures/phases_date.png")
 ```
 
-## Pipelines, multi-task tools
+## Pipelines and toolboxes
 
 ```{r plot-cats-tool}
 cats.tools.plot <- tools %>%
@@ -638,11 +677,17 @@ save_plot("figures/cats_per_tool.pdf", panel, nrow = 1, ncol = 2,
           base_height = 8)
 ```
 
-```{r cats-per-tool}
+* Most tools in few categories
+* Later tools have more
+* Highlight complete pipelines, tools with many categories
+
+```{r cats-per-tool, fig.cap = "The number of categories associated with each tools in the scRNA-tools database. The majority of tools perform few tasks (A). When stratifying by the date tools were added to the database we an increase in the number of categories per tool for tools added at later dates (B)."}
 include_graphics("figures/cats_per_tool.png")
 ```
 
 ## Other analyses
+
+* Mention alternative analyses and tools
 
 # Discussion and conclusions
 
@@ -680,6 +725,10 @@ Program.
 # Authors' contributions
 
 # Acknowledgements
+
+* Sean Davis
+* Licenses...
+* Breon
 
 # References
 

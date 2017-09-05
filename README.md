@@ -17,7 +17,8 @@ Data
 
 The `data` directory contains the following files:
 
-* `` - 
+* `descriptions.json` - Descriptions of analysis categories
+* `single_cell_software.csv` - Table of analysis tools
 
 Analysis
 --------
@@ -25,7 +26,7 @@ Analysis
 The code for completing the analysis shown in the paper is provided as the
 following Rmarkdown files in the analysis directory:
 
-* `.Rmd` - 
+* `database.Rmd` - Analysis of the scRNA-tools database 
 
 R
 ---

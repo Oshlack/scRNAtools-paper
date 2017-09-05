@@ -11,6 +11,7 @@ Directory structure
 * `figures` - Figures used in the main paper
 * `output` - Additional intermediate files
 * `R` - R functions used in analysis
+* `style` - Document style files
 
 Data
 ----
@@ -34,3 +35,11 @@ R
 This directory contains the following functions used in the analysis:
 
 * `.R`
+
+Style
+-----
+
+* `style.docx` - Reference DOCX style file
+* `style.Rmd` - Reference Rmd style file
+* `references.bib` - Bibliography database
+

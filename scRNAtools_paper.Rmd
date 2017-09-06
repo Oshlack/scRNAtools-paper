@@ -1,11 +1,11 @@
 ---
 title: "Trends in single-cell RNA-seq analysis tools"
 author:
-- Luke Zappia 
+- Luke Zappia
 - Belinda Phipson
 - Alicia Oshlack
 date: "`r Sys.Date()`"
-output: 
+output:
     bookdown::word_document2:
         reference_docx: style/style.docx
 bibliography: style/references.bib
@@ -93,29 +93,33 @@ cats <- read_json("data/descriptions.json", simplifyVector = TRUE) %>%
     * Gene identification
     * Interpretation?
 
-Single-cell RNA-sequencing (scRNA-seq) has quickly become a tool of choice for 
+Single-cell RNA-sequencing (scRNA-seq) has quickly become a tool of choice for
 interrogating the transcriptome at the resolution of individual cells. Since the
 first protocols were published in 2009 the number of cells in scRNA-seq datasets
-has increased exponentially, outstripping Moore’s Law [Svensson 2017]. As well 
-as the size of datasets the number of studies has also increased rapidly. With 
-the availability of new data has come a demand for new analysis methods. Apart 
-from the scale scRNA-seq provides several challenges compared to RNA-seq 
-experiments of bulk samples. More specifically scRNA-seq data is extremely 
-sparse (there is no expression measured for most genes in most cells) and the 
-analysis approaches required are different, as the groups of interest are 
-usually not known in advance.
+has increased exponentially, outstripping Moore’s Law [Svensson 2017]. As the
+size of scRNA-seq datasets has grown the number of available datasets has also
+increased rapidly. With the availability of this new kind of data has come a
+demand for new analysis methods. Single-cell experiments provide a variety of
+challenges apart from scale when compared to RNA sequencing of bulk samples.
+More specifically scRNA-seq data is extremely sparse (there is no expression
+measured for most genes in most cells) and the analysis approaches required can
+be different as many experiment aim to identify cell types rather than comparing
+known groups of interest.
 
-Since August 2016 we have collated and categorised scRNA-seq analysis software 
-as it has become available. This database is now publically available at 
-www.scRNA-tools.org. Here we discuss the stages of scRNA-seq analysis and their 
-relationship to tools in the scRNA-tools database.
+Keeping up with the current state of scRNA-seq analysis is a significant
+challenge and a new-comer to the field is presented with a huge number of
+choices. Since September 2016 we have collated and categorised scRNA-seq analysis
+tools as they have become available. This database is now publicly available at
+www.scRNA-tools.org. Here we discuss the stages of scRNA-seq analysis and their
+relationship to tools in the scRNA-tools database, providing some insight into
+the trends in this rapidly developing field.
 
 # Overview of the scRNA-tools database
 
 * What is in the database?
 * How has it been collected?
 
-The scRNA-seq database contains information on software tools specifically
+The scRNA-tools database contains information on software tools specifically
 designed for the analysis of scRNA-seq data. To be eligible to be included in
 the database software tools must be available for download and public use. This
 can be from a software package repository (such as Bioconductor, CRAN or PyPI),
@@ -123,7 +127,17 @@ a code sharing website such as Github or directly from a private website.
 Various details of the tools are recorded such as the programming language or
 platform they use, details of any related publication, links to the source code
 and the associated software license. Tools are also categorised according to the
-tasks they are able to perform.
+analysis tasks they are able to perform. Most tools are added after a preprint
+or publication becomes available but some have been added after being mentioned
+on social media or in similar collections.
+
+When the database we first constructed there were 70 scRNA-seq analysis tools
+available, representing work in the field during the three years from the first
+published tool in November 2013 [SAMstrt] up to October 2016. In the year since
+then over 60 more tools have been added [FIGURE]. The doubling of the number of
+available tools in such a short time demonstrates the blossoming interest in
+scRNA-seq and its maturation from a technique requiring custom-built equipment
+with specialised protocols to a commercially available product.
 
 * Increase in tools over time
 
@@ -148,7 +162,7 @@ ggsave("figures/tools_over_time.png", totals.plot, height = 5)
 ggsave("figures/tools_over_time.pdf", totals.plot, height = 5)
 ```
 
-```{r tools-over-time, fig.cap = "Increase in available scRNA-seq tools over time. Since the scRNA-seq tools database was started in August 2016 more than 50 new tools have been released."}
+```{r tools-over-time, fig.cap = "Increase in available scRNA-seq tools over time. Since the scRNA-seq tools database was started in September 2016 more than 60 new tools have been released."}
 include_graphics("figures/tools_over_time.png")
 ```
 
@@ -243,7 +257,7 @@ license.plot <- tools %>%
            IsApache = str_detect(License, "Apache"),
            IsArtistic = str_detect(License, "Artistic"),
            IsUnknown = is.na(License),
-           IsOther = !(IsGPL | IsBSD | IsMIT | IsApache | IsArtistic | 
+           IsOther = !(IsGPL | IsBSD | IsMIT | IsApache | IsArtistic |
                            IsUnknown)) %>%
     summarise(Apache = sum(IsApache, na.rm = TRUE),
               Artistic = sum(IsArtistic, na.rm = TRUE),
@@ -282,7 +296,7 @@ license.plot.time <- tools %>%
            IsApache = str_detect(License, "Apache"),
            IsArtistic = str_detect(License, "Artistic"),
            IsUnknown = is.na(License),
-           IsOther = !(IsGPL | IsBSD | IsMIT | IsApache | IsArtistic | 
+           IsOther = !(IsGPL | IsBSD | IsMIT | IsApache | IsArtistic |
                            IsUnknown)) %>%
     summarise(Apache = sum(IsApache, na.rm = TRUE),
               Artistic = sum(IsArtistic, na.rm = TRUE),
@@ -428,52 +442,80 @@ save_plot("figures/platforms_licenses.pdf", panel, nrow = 1, ncol = 2,
 * Most released under open-source license
 * Some with no license...
 
-```{r platforms-licenses, fig.cap = "The open-source nature of scRNA-seq analysis tools. The majority of tools are available for either the R or Python programming lanuages (A). Most tools are released under a standard open-source software license, with variants of the GNU Public License (GPL) being the most common. However licenses could not be found for a large proportion of tools."}
+Developers of scRNA-seq analysis tools have choices to make about what platforms
+they use to create their tools, how they make them available to the community
+and whether they share the source code. The most commonly used platform is the
+R statistical programming language, with many tools being available through the
+Bioconductor or CRAN repositories. Python is the second most popular language,
+followed by MATLAB, a commercially available product, and the lower-level C++.
+The use of R and Python is consistent with their popularity across a range of
+data science fields. In particular the use of R reflects its history as the
+language of choice for the analysis of bulk RNA-seq datasets and a range of
+other biological data types.
+
+```{r platforms-licenses, fig.cap = "The open-source nature of scRNA-seq analysis tools. The majority of tools are available for either the R or Python programming languages (A). Most tools are released under a standard open-source software license, with variants of the GNU Public License (GPL) being the most common. However licenses could not be found for a large proportion of tools."}
 include_graphics("figures/platforms_licenses.png")
 ```
 
+The majority of tools in the scRNA-tools database have chosen to take an
+open-source approach, making their code available under permissive licenses.
+Variations of the GNU Public License (GPL) are the most common, covering almost
+half of tools. This license allows free use, modification and distribution of
+source code, but also has a "copyleft" nature which requires any derivatives to
+disclose their source code and use the same license. The MIT license is the
+second most which also use of code for any purpose but without any restrictions
+on distribution or licensing. The appropriate license could not be identified
+for almost a quarter of tools. This is problematic as fellow developers must
+assume that source code cannot be reused, potentially limited the usefulness of
+the methods in those tools. Tool owners are strongly encouraged to clearly
+disply their license in source code and documentation.
+
 # Phases of scRNA-seq analysis
 
-A typical scRNA-seq analysis can be divided into various phases, each of which 
-consists of various tasks which can be completed using a variety of tools 
+A typical scRNA-seq analysis can be divided into various phases, each of which
+consists of various tasks which can be completed using a variety of tools
 [FIGURE]. The data acquisition phase takes the raw nucleotide sequences from the
-sequencing experiment and returns an matrix describing the expression of each 
-gene (rows) in each cell (columns). This phase consists of tasks common to bulk 
-RNA-seq experiments, such as alignment to a reference genome and quantification 
-of expression, but is often extended to handle Unique Molecular Identifiers 
-(UMIs). Once an expression matrix has been obtained it is vital to make sure it 
-is of quality. In the data cleaning phase quality control of cells is performed 
-as well as filtering of uninformative genes. Additional tasks may be performed 
+sequencing experiment and returns an matrix describing the expression of each
+gene (rows) in each cell (columns). This phase consists of tasks common to bulk
+RNA-seq experiments, such as alignment to a reference genome and quantification
+of expression, but is often extended to handle Unique Molecular Identifiers
+(UMIs). Once an expression matrix has been obtained it is vital to make sure it
+is of quality. In the data cleaning phase quality control of cells is performed
+as well as filtering of uninformative genes. Additional tasks may be performed
 to normalise the data or impute missing values and exploratory analysis is often
 performed in this phase, such as viewing the datasets in reduced dimensions.
 
-The high-quality expression matrix is the focus of the next phases of analysis. 
+The high-quality expression matrix is the focus of the next phases of analysis.
 In Phase 3 cells are assigned, either to discrete groups via clustering or along
 a continuous trajectory from one cell type to another. As high-quality reference
 datasets become available it will also become feasible to classify cell directly
-into different cell types. Once cells have been assigned attention turns to 
+into different cell types. Once cells have been assigned attention turns to
 interpreting what those assignments mean. Identifying interesting genes, such as
-those that are differentially expressed across group, marker genes expressed in 
-a single group or genes that change expression along a trajectory, is the 
+those that are differentially expressed across group, marker genes expressed in
+a single group or genes that change expression along a trajectory, is the
 typical way to do this.
 
-```{r analysis-phases, fig.cap = "Phases of the scRNA-seq analysis process. In Phase 1 (data acquisition) raw sequencing reads are converted into a gene by cell expression matrix. For many protocols this requires the assignment and de-duplication of Unique Molecular Identifiers (UMIs). The data is then cleaned (Phase 2) to remove low-quality cells and uninformative genes, resulting in a high-quality dataset for further analysis. Phase 3 assigns cells, either to distinct groups (clustering) or to a position on a pseudotime trajectory. Alternatively cells can be classified based on known cell types. Interesting genes (eg. differentially expressed, markers, highly variable) are then identified to explain these groups or paths (Phase 4)."}
-include_graphics("figures/phases_diagram.png")
+```{r analysis-phases, fig.cap = "Phases of the scRNA-seq analysis process. In Phase 1 (data acquisition) raw sequencing reads are converted into a gene by cell expression matrix. For many protocols this requires the alignment of genes to a reference genome and the assignment and de-duplication of Unique Molecular Identifiers (UMIs). The data is then cleaned (Phase 2) to remove low-quality cells and uninformative genes, resulting in a high-quality dataset for further analysis. Missing values can also be imputed during this phase. Phase 3 assigns cells, either in a discrete manner to known (classification) or unknown (clustering) grops or to a position on a continuous trajectory. Interesting genes (eg. differentially expressed, markers, specific patterns of expression) are then identified to explain these groups or trajectories (Phase 4)."}
+include_graphics("figures/phase_diagram2.png")
 ```
 
 While there are other approaches that could be taken to analyse scRNA-seq data
 these phases represent the most common path from raw sequencing reads to
 biological insight.
 
-```{r cell-assignment, fig.cap = "Strategies for assigning cells. Discrete groups of cells can be formed by clustering cells based on similar expression profiles or classifying them using reference datasets. Alternatively cells can be ordered along a trajectory from one cell type to another."}
+```{r cell-assignment, fig.cap = "Strategies for assigning cells. Discrete groups of cells can be formed by clustering cells based on similar expression profiles or classifying them using reference datasets. Alternatively cells can be ordered along a trajectory from one cell type to another.", eval = FALSE}
 include_graphics("figures/cell_assignment.png")
 ```
 
-```{r gene-identification, fig.cap = "Examples of interesting genes to identify. When working with discrete groups tools try to find genes that are differentially expressed across the groups or marker genes that are uniquely expressed in a single group. If cells have been ordered tools instead look for genes that change expression along the trajectory, for example genes that are highly expressed and the start and lowly expressed at the end."}
+```{r gene-identification, fig.cap = "Examples of interesting genes to identify. When working with discrete groups tools try to find genes that are differentially expressed across the groups or marker genes that are uniquely expressed in a single group. If cells have been ordered tools instead look for genes that change expression along the trajectory, for example genes that are highly expressed and the start and lowly expressed at the end.", eval = FALSE}
 include_graphics("figures/gene_identification.png")
 ```
 
 ## Analysis tasks
+
+Tools in the scRNA-tools database have been categorised according to the
+analysis tasks they are able to complete. Descriptions of the tasks are given in
+[TABLE], along with the associated analysis phases.
 
 ```{r categories-table}
 cap = "Descriptions of categories for tools in the scRNA-tools database"
@@ -484,6 +526,16 @@ cats %>%
     select(Phase, everything()) %>%
     kable(caption = cap)
 ```
+
+The frequency of the analysis tasks performed reflects the differences between
+analysing scRNA-seq and bulk RNA-seq data and the extra opportunities provided
+at single-cell resolution. Visualisation is the most common task and is
+important across all stages of analysis for displaying data and results. Tasks
+for assigning cells (pseudotime and clustering) are the next most common. This
+has been the biggest area of development in single-cell analysis with clustering
+tools such as XXXX being used to identify cell types in a sample and trajectory
+analysis tools (XXXX) being used to investigate how genes change across
+developmental processes.
 
 ```{r plot-categories}
 phase.cols <- c(brewer.pal(5, "Set1"), "#999999")
@@ -520,13 +572,42 @@ ggsave("figures/categories.png", cats.plot, height = 5)
 ggsave("figures/categories.pdf", cats.plot, height = 5)
 ```
 
+```{r categories, fig.cap = "Categories of tools in the scRNA-tools database. Each tool can be assigned to multiple categories based on the tasks it can complete. Categories associated with multiple analysis phases (visualisation, dimensionality reduction) are the most common, followed by categories associated with the cell assignment phase (pseudotime, clustering)."}
+include_graphics("figures/categories.png")
+```
+
 * Tools spread across categories
 * Common tasks and cell assignment most popular
     * Reflects differences between bulk and single-cell
 
-```{r categories, fig.cap = "Categories of tools in the scRNA-tools database. Each tool can be assigned to multiple categories based on the tasks it can complete. Categories associated with multiple analysis phases (visualisation, dimensionality reduction) are the most common, followed by categories associated with the cell assignment phase (pseudotime, clustering)."}
-include_graphics("figures/categories.png")
-```
+Dimensionality reduction is also a common task and has applications both in
+visualisation (via techniques such as t-SNE) and as a starting point for
+analysis. Testing for differential expression is perhaps the most common
+analysis performed on bulk RNA-seq datasets and it is also commonly applied by
+many scRNA-seq analysis tools, typically to identify gene that are different in
+one cluster of cells compared to the rest. However it should be noted that the
+DE testing applied by scRNA-seq tools often does not match the rigorous
+statistical frameworks of tools developed for bulk RNA-seq such as edgeR, DESeq2
+and limma, often simple statistical tests such as the likelihood ratio tests.
+While methods designed to test DE specifically in single-cell datasets do exist
+it is still unclear whether they do or do not improve on these established
+methods.
+
+* Decrease in psuedotime tools
+* Not really sure what to say about this...
+
+To get some idea of how the focus of scRNA-seq tool development has changed we
+have divided the scRNA-tools database into those added before and after October
+2016. This will allow us to see which analysis tasks are common in more recently
+published tools. Many tasks show little change but there are some areas where
+there have been significant changes. Both visualisation and dimensionality
+reduction are more common in recent tools. Quantification has also seen a big
+increase as UMI based protocols become commonly used and tools designed to
+handle the extra processing steps required have been developed. Simulation has
+always been used to test, develop and validate scRNA-seq tools but more packages
+are now including their simulation functions and some tools have been developed
+for the specific purpose of generating realistic synthetic scRNA-seq datasets.
+More tools are also identifying or making use of co-regulated gene networks.
 
 ```{r plot-categories-time}
 cats.time.plot <- tools %>%
@@ -564,12 +645,28 @@ ggsave("figures/categories_time.png", cats.time.plot, height = 8)
 ggsave("figures/categories_time.pdf", cats.time.plot, height = 8)
 ```
 
-* Decrease in psuedotime tools
-* Not really sure what to say about this...
-
 ```{r categories-time, fig.cap = "Changes in analysis categories over time, comparing tools added before and after October 2016. There have been significant increases in the percentage of tools associated with visualisation, dimensionality reduction, quantification and simulation. Categories including expression patterns, pseudotime and interactivity have seen relative decreases."}
 include_graphics("figures/categories_time.png")
 ```
+
+Some tasks have seen a decrease in commonality, most strikingly testing for
+expression patterns. This is likely related to the change in pseudotime analysis
+which is the focus of a slightly lower percentage of tools added after October
+2016.
+
+* Similar information to the last plot but summarised at a higher level
+
+Looking at the tools that can perform at least one task in an analysis phase we
+see similar trends. We see increases in the percentage of tools performing tasks
+in Phase 1 (quantification), Phase 2 (quality control and filtering), across
+multiple phases (visualisation and dimensionality reduction) and alternative
+analysis tasks. In contrast the percentage of tools that perform gene
+identification tasks (Phase 2) has decreased and the percentage assigning cells
+(Phase 3) has remained steady. This may indicate a maturation of the analysis
+space as existing tools for performing standard scRNA-seq analyses are deemed
+sufficient while there is still room for development in handling data from new
+protocols and performing alternative analysis tasks.
+
 
 ```{r plot-date-phases}
 phases.plot.date <- tools %>%
@@ -616,13 +713,30 @@ ggsave("figures/phases_date.png", phases.plot.date, height = 5)
 ggsave("figures/phases_date.pdf", phases.plot.date, height = 5)
 ```
 
-* Similar information to the last plot but summarised at a higher level
-
 ```{r phases-over-time, fig.cap = "Changes in the percentage of tools associated with analysis phases over time. The percentage of tools involved in the data acquisition and data cleaning phases have increased, as have tools completed alternative analysis tasks. The gene identification phase has seen a relative decrease in the number of tools."}
 include_graphics("figures/phases_date.png")
 ```
 
 ## Pipelines and toolboxes
+
+* Most tools in few categories
+* Later tools have more
+* Highlight complete pipelines, tools with many categories
+
+While there are a considerable number of scRNA-seq tools that only perform a
+single analysis task, most perform at least two. Older tools tend to specialise
+more while those that have been added more recently can perform more tasks. Some
+tools, such as XXXX are designed to be complete pipelines, taking raw sequencing
+reads and producing a report showing the results of a complete analysis. Others,
+such as XXXX,  can be thought of as analysis toolboxes, able to complete a range
+of complex analyses starting with a gene expression matrix. Being able to
+complete multiple tasks using a single tool can simplify analysis as problems
+with converting between different data formats can be avoided, however it is
+important to remember that it is difficult for a tool with many functionalities
+to continue to represent the state of the art in all of them. Support for common
+data formats, such as the recently release SingleCellExperiment object in R,
+provides another way for developers to allow easy use of their tools and users
+to build custom workflows from specialised tools.
 
 ```{r plot-cats-tool}
 cats.tools.plot <- tools %>%
@@ -677,10 +791,6 @@ save_plot("figures/cats_per_tool.pdf", panel, nrow = 1, ncol = 2,
           base_height = 8)
 ```
 
-* Most tools in few categories
-* Later tools have more
-* Highlight complete pipelines, tools with many categories
-
 ```{r cats-per-tool, fig.cap = "The number of categories associated with each tools in the scRNA-tools database. The majority of tools perform few tasks (A). When stratifying by the date tools were added to the database we an increase in the number of categories per tool for tools added at later dates (B)."}
 include_graphics("figures/cats_per_tool.png")
 ```
@@ -688,6 +798,16 @@ include_graphics("figures/cats_per_tool.png")
 ## Other analyses
 
 * Mention alternative analyses and tools
+
+Some tools perform analyses that lie outside the common tasks performed on
+scRNA-seq data. Simulation is one alternative task that has already been
+mentioned but there is also a group of tools designed to detect variability
+apart from changes in expression. For example alternative splicing, single
+nucleotide [?] variants and allele-specific expression. While tools that
+complete these tasks are unlikely to ever dominate scRNA-seq analysis it is
+likely that we will see an increase in methods for tackling alternative problems
+as researchers continue to push the boundaries of what can be observed using
+scRNA-seq data.
 
 # Discussion and conclusions
 
@@ -699,7 +819,10 @@ include_graphics("figures/cats_per_tool.png")
         * Integration
     * New technologies
     * Reference databases
-    
+
+As scRNA-seq analysis matures we can expect some existing tools to continue to
+add functionality while others will cease to be updated and maintained.
+
 # Methods
 
 # Declarations
@@ -733,4 +856,3 @@ Program.
 # References
 
 # Additional files
-

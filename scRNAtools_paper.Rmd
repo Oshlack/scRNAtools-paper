@@ -624,7 +624,7 @@ scRNA-seq datasets. More tools are also identifying or making use of
 co-regulated gene networks.
 
 ```{r plot-categories-time}
-cats.time.plot <- tools %>%
+cats.time.points <- tools %>%
     group_by(IsOld) %>%
     mutate(Size = n()) %>%
     group_by(IsOld, Size) %>%
@@ -635,9 +635,19 @@ cats.time.plot <- tools %>%
     mutate(Category = factor(Category,
                              levels = rev(levels(cat.counts$Category)))) %>%
     group_by(IsOld) %>%
-    mutate(Prop = Count / Size) %>%
-    ggplot(aes(x = Category, y = Prop, colour = IsOld)) +
-    geom_point(size = 4) +
+    mutate(Prop = Count / Size)
+
+cats.time.changes <- cats.time.points %>%
+    select(Category, IsOld, Prop) %>%
+    spread(IsOld, Prop) %>%
+    rename(Old = `TRUE`, New = `FALSE`) %>%
+    mutate(Decrease = New < Old)
+
+cats.time.plot <- ggplot(cats.time.points, aes(x = Category)) +
+    geom_linerange(data = cats.time.changes,
+                   aes(ymin = Old, ymax = New, colour = Decrease),
+                   size = 4.5, alpha = 0.3) +
+    geom_point(aes(y = Prop, colour = IsOld), size = 4) +
     scale_color_manual(name = "Date added",
                        labels = c("After 2016-10-01", "Before 2016-10-01"),
                        values = unname(pal)) +

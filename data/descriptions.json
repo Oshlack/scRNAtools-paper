@@ -1,5 +1,10 @@
 [
   {
+    "Category": "Alignment",
+    "Phase": "Phase 1",
+    "Description": "Alignment of reads to a reference"
+  },
+  {
     "Category": "AlleleSpecific",
     "Phase": "Other",
     "Description": "Detection of allele-specific expression"
@@ -11,7 +16,7 @@
   },
   {
     "Category": "Assembly",
-    "Phase": "Other",
+    "Phase": "Phase 1",
     "Description": "Tools that perform assembly of scRNA-seq reads"
   },
   {
@@ -65,6 +70,11 @@
     "Description": "Use or assignment of haplotypes"
   },
   {
+    "Category": "Immune",
+    "Phase": "Other",
+    "Description": "Assignment of receptor sequences and immune cell clonality"
+  },
+  {
     "Category": "Imputation",
     "Phase": "Phase 2",
     "Description": "Estimation of expression where zeros have been observed"
@@ -90,7 +100,7 @@
     "Description": "Removal of unwanted variation that may affect results"
   },
   {
-    "Category": "Pseudotime",
+    "Category": "Ordering",
     "Phase": "Phase 3",
     "Description": "Ordering of cells along a trajectory"
   },
@@ -123,6 +133,11 @@
     "Category": "Transformation",
     "Phase": "Other",
     "Description": "Transformation between expression levels and some other measure"
+  },
+  {
+    "Category": "UMIs",
+    "Phase": "Phase 1",
+    "Description": "Processing of Unique Molecular Identifiers"
   },
   {
     "Category": "VariableGenes",

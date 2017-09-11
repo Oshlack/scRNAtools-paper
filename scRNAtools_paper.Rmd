@@ -45,10 +45,10 @@ library("tidyverse")
 ```
 
 ```{r palette}
-pal <- c(pink = "#EC008C",    # Pink
-         blue = "#00ADEF",    # Blue
-         green = "#8DC63F",   # Green
-         teal = "#00B7C6",    # Teal
+pal <- c(pink   = "#EC008C",  # Pink
+         blue   = "#00ADEF",  # Blue
+         green  = "#8DC63F",  # Green
+         teal   = "#00B7C6",  # Teal
          orange = "#F47920",  # Orange
          purple = "#7A52C7")  # Purple
 ```
@@ -81,18 +81,6 @@ cats <- read_json("data/descriptions.json", simplifyVector = TRUE) %>%
 
 # Introduction
 
-* scRNA-seq
-    * What is it?
-    * What is the history?
-    * What is it used for?
-    * How is it different to bulk?
-* Analysis
-    * Getting the data
-    * Quality control
-    * Clustering/psuedotime
-    * Gene identification
-    * Interpretation?
-
 Single-cell RNA-sequencing (scRNA-seq) has rapidly gained traction as an
 effective tool for interrogating the transcriptome at the resolution of
 individual cells. Since the first protocols were published in 2009 the number of
@@ -124,9 +112,6 @@ developing field.
 
 # Overview of the scRNA-tools database
 
-* What is in the database?
-* How has it been collected?
-
 The scRNA-tools database contains information on software tools specifically
 designed for the analysis of scRNA-seq data. For a tool to be eligible to be
 included in the database it must be available for download and public use. This
@@ -146,8 +131,6 @@ then over 60 more tools have been added [FIGURE]. The doubling of the number of
 available tools in such a short time demonstrates the blossoming interest in
 scRNA-seq and its maturation from a technique requiring custom-built equipment
 with specialised protocols to a commercially available product.
-
-* Increase in tools over time
 
 ```{r plot-tools-over-time}
 date.totals <- tools %>%
@@ -256,6 +239,8 @@ save_plot("figures/publication_status.pdf", panel, nrow = 1, ncol = 2,
 include_graphics("figures/publication_status.png")
 ```
 
+## Open-source
+
 ```{r plot-licenses}
 license.plot <- tools %>%
     select(License) %>%
@@ -294,60 +279,6 @@ license.plot <- tools %>%
     theme(plot.title = element_text(size = 20),
           legend.position = "none"
     )
-
-license.plot.time <- tools %>%
-    group_by(IsOld) %>%
-    select(License, IsOld) %>%
-    mutate(IsGPL = str_detect(License, "GPL"),
-           IsBSD = str_detect(License, "BSD"),
-           IsMIT = str_detect(License, "MIT"),
-           IsApache = str_detect(License, "Apache"),
-           IsArtistic = str_detect(License, "Artistic"),
-           IsUnknown = is.na(License),
-           IsOther = !(IsGPL | IsBSD | IsMIT | IsApache | IsArtistic |
-                           IsUnknown)) %>%
-    summarise(Apache = sum(IsApache, na.rm = TRUE),
-              Artistic = sum(IsArtistic, na.rm = TRUE),
-              BSD = sum(IsBSD, na.rm = TRUE),
-              GPL = sum(IsGPL, na.rm = TRUE),
-              MIT = sum(IsMIT, na.rm = TRUE),
-              Other = sum(IsOther),
-              Unknown = sum(IsUnknown)) %>%
-    gather(key = License, value = Count, -IsOld) %>%
-    mutate(License = factor(License,
-                            levels = c("Apache", "Artistic", "BSD", "GPL",
-                                       "MIT", "Other", "Unknown"))) %>%
-    group_by(IsOld) %>%
-    mutate(Prop = Count / sum(Count)) %>%
-    ggplot(aes(x = License, y = Prop, fill = IsOld)) +
-    geom_bar(stat = "identity", position = "dodge") +
-    scale_fill_manual(name = "Date added",
-                      labels = c("After 2016-10-01", "Before 2016-10-01"),
-                      values = unname(pal)) +
-    scale_y_continuous(labels = scales::percent) +
-    ggtitle("Software licenses") +
-    ylab("Percentage of tools") +
-    theme_cowplot() +
-    theme(legend.position = c(0.75, 0.85),
-          legend.title = element_text(size = 14),
-          legend.text = element_text(size = 12),
-          legend.key.size = unit(25, "points"),
-          plot.title = element_text(size = 20),
-          axis.text = element_text(size = 12),
-          axis.title.x = element_blank()
-    )
-
-panel <- plot_grid(license.plot, license.plot.time, nrow = 1, ncol = 2,
-                   labels = "AUTO")
-
-save_plot("figures/licenses.png", panel, nrow = 1, ncol = 2,
-          base_height = 8)
-save_plot("figures/licenses.pdf", panel, nrow = 1, ncol = 2,
-          base_height = 8)
-```
-
-```{r licenses, eval = FALSE}
-include_graphics("figures/licenses.png")
 ```
 
 ```{r plot-platforms}
@@ -381,57 +312,6 @@ platforms.plot <- tools %>%
           plot.title = element_text(size = 20),
           axis.text = element_text(size = 12)
     )
-
-platforms.plot.time <- tools %>%
-    group_by(IsOld) %>%
-    select(Platform, IsOld) %>%
-    mutate(IsR = str_detect(Platform, "R"),
-           IsPython = str_detect(Platform, "Python"),
-           IsMATLAB = str_detect(Platform, "MATLAB"),
-           IsCPP = str_detect(Platform, "C++"),
-           IsOther = !(IsR | IsPython | IsMATLAB | IsCPP)) %>%
-    summarise(R = sum(IsR),
-              Python = sum(IsPython),
-              MATLAB = sum(IsMATLAB),
-              CPP = sum(IsCPP),
-              Other = sum(IsOther)) %>%
-    gather(key = Platform, value = Count, -IsOld) %>%
-    mutate(Platform = factor(Platform,
-                             levels = c("R", "Python", "MATLAB", "CPP",
-                                        "Other"),
-                             labels = c("R", "Python", "MATLAB", "C++",
-                                        "Other"))) %>%
-    group_by(IsOld) %>%
-    mutate(Prop = Count / sum(Count)) %>%
-    ggplot(aes(x = Platform, weight = Prop, fill = IsOld)) +
-    geom_bar(position = "dodge") +
-    scale_y_continuous(labels = scales::percent) +
-    scale_fill_manual(name = "Date added",
-                      labels = c("After 2016-10-01", "Before 2016-10-01"),
-                      values = unname(pal)) +
-    ggtitle("Platforms used by analysis tools") +
-    ylab("Percentage of tools") +
-    theme_cowplot() +
-    theme(legend.position = c(0.75, 0.85),
-          legend.title = element_text(size = 14),
-          legend.text = element_text(size = 12),
-          legend.key.size = unit(25, "points"),
-          plot.title = element_text(size = 20),
-          axis.text = element_text(size = 12),
-          axis.title.x = element_blank()
-    )
-
-panel <- plot_grid(platforms.plot, platforms.plot.time, nrow = 1, ncol = 2,
-                   labels = "AUTO")
-
-save_plot("figures/platforms.png", panel, nrow = 1, ncol = 2,
-          base_height = 8)
-save_plot("figures/platforms.pdf", panel, nrow = 1, ncol = 2,
-          base_height = 8)
-```
-
-```{r platforms, eval = FALSE}
-include_graphics("figures/platforms.png")
 ```
 
 ```{r plot-platforms-licenses}
@@ -443,12 +323,6 @@ save_plot("figures/platforms_licenses.png", panel, nrow = 1, ncol = 2,
 save_plot("figures/platforms_licenses.pdf", panel, nrow = 1, ncol = 2,
           base_height = 8)
 ```
-
-## Open-source
-
-* Most tools use (free) R or Python
-* Most released under open-source license
-* Some with no license...
 
 Developers of scRNA-seq analysis tools have choices to make about what platforms
 they use to create their tools, how they make them available to the community
@@ -515,15 +389,8 @@ include_graphics("figures/phase_diagram2.png")
 
 While there are other approaches that could be taken to analyse scRNA-seq data
 these phases represent the most common path from raw sequencing reads to
-biological insight. Descriptions of the categories in the scRNA-tools database are given in [TABLE], along with the associated analysis phases.
-
-```{r cell-assignment, fig.cap = "Strategies for assigning cells. Discrete groups of cells can be formed by clustering cells based on similar expression profiles or classifying them using reference datasets. Alternatively cells can be ordered along a trajectory from one cell type to another.", eval = FALSE}
-include_graphics("figures/cell_assignment.png")
-```
-
-```{r gene-identification, fig.cap = "Examples of interesting genes to identify. When working with discrete groups tools try to find genes that are differentially expressed across the groups or marker genes that are uniquely expressed in a single group. If cells have been ordered tools instead look for genes that change expression along the trajectory, for example genes that are highly expressed and the start and lowly expressed at the end.", eval = FALSE}
-include_graphics("figures/gene_identification.png")
-```
+biological insight. Descriptions of the categories in the scRNA-tools database
+are given in [TABLE], along with the associated analysis phases.
 
 ```{r categories-table}
 cap = "Descriptions of categories for tools in the scRNA-tools database"
@@ -553,7 +420,7 @@ across developmental processes.
 phase.cols <- c(brewer.pal(5, "Set1"), "#999999")
 
 cat.counts <- tools %>%
-    summarise_at(8:35, sum) %>%
+    summarise_at(8:38, sum) %>%
     gather(key = Category, value = Count) %>%
     arrange(-Count) %>%
     mutate(Prop = Count / nrow(tools)) %>%
@@ -588,10 +455,6 @@ ggsave("figures/categories.pdf", cats.plot, height = 5)
 include_graphics("figures/categories.png")
 ```
 
-* Tools spread across categories
-* Common tasks and cell assignment most popular
-    * Reflects differences between bulk and single-cell
-
 Dimensionality reduction is also a common task and has applications both in
 visualisation (via techniques such as t-SNE) and as a starting point for
 analysis. Testing for differential expression is perhaps the most common
@@ -604,9 +467,6 @@ edgeR, DESeq2 and limma, often using simple statistical tests such as the
 likelihood ratio tests. While methods designed to test DE specifically in
 single-cell datasets do exist it is still unclear whether they do or do not
 improve on these established methods.
-
-* Decrease in psuedotime tools
-* Not really sure what to say about this...
 
 To investigate how the focus of scRNA-seq tool development has changed over time
 we have divided the scRNA-tools database into tools added before and after
@@ -628,7 +488,7 @@ cats.time.points <- tools %>%
     group_by(IsOld) %>%
     mutate(Size = n()) %>%
     group_by(IsOld, Size) %>%
-    summarise_at(8:35, sum) %>%
+    summarise_at(8:38, sum) %>%
     gather(key = Category, value = Count, -IsOld, -Size) %>%
     mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
     mutate(Category = str_trim(Category)) %>%
@@ -678,8 +538,6 @@ most strikingly testing for expression patterns. This is likely related to the
 change in pseudotime analysis which is the focus of a slightly lower percentage
 of tools added after October 2016.
 
-* Similar information to the last plot but summarised at a higher level
-
 Looking at the tools that can perform at least one task in an analysis phase we
 see similar trends. We see increases in the percentage of tools performing tasks
 in Phase 1 (quantification), Phase 2 (quality control and filtering), across
@@ -691,13 +549,12 @@ space as existing tools for performing standard scRNA-seq analyses are deemed
 sufficient while there is still room for development in handling data from new
 protocols and performing alternative analysis tasks.
 
-
 ```{r plot-date-phases}
 phases.plot.date <- tools %>%
     mutate(Phase1 = Quantification,
            Phase2 = QualityControl | Normalisation | Imputation |
                GeneFiltering | CellCycle,
-           Phase3 = Clustering | Classification | Pseudotime | RareCells |
+           Phase3 = Clustering | Classification | Ordering | RareCells |
                StemCells,
            Phase4 = DifferentialExpression | MarkerGenes | ExpressionPatterns |
                VariableGenes | GeneSets | GeneNetworks,
@@ -743,10 +600,6 @@ include_graphics("figures/phases_date.png")
 
 ## Pipelines and toolboxes
 
-* Most tools in few categories
-* Later tools have more
-* Highlight complete pipelines, tools with many categories
-
 While there are a considerable number of scRNA-seq tools that only perform a
 single analysis task, most perform at least two. We find that older tools tend
 to specialise more while those that have been added more recently can perform
@@ -765,7 +618,7 @@ tools.
 
 ```{r plot-cats-tool}
 cats.tools.plot <- tools %>%
-    select(Name, 8:35) %>%
+    select(Name, 8:38) %>%
     gather(key = Category, value = TF, -Name) %>%
     group_by(Name) %>%
     summarise(Count = sum(TF)) %>%
@@ -781,7 +634,7 @@ cats.tools.plot <- tools %>%
     )
 
 cats.tools.time.plot <- tools %>%
-    select(Name, IsOld, 8:35) %>%
+    select(Name, IsOld, 8:38) %>%
     gather(key = Category, value = TF, -Name, -IsOld) %>%
     group_by(Name, IsOld) %>%
     summarise(Cats = sum(TF)) %>%
@@ -821,8 +674,6 @@ include_graphics("figures/cats_per_tool.png")
 ```
 
 ## Other analyses
-
-* Mention alternative analyses and tools
 
 Some tools perform analyses that lie outside the common tasks performed on
 scRNA-seq data. Simulation is one alternative task that has already been

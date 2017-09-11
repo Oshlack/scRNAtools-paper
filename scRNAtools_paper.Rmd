@@ -397,6 +397,8 @@ cap = "Descriptions of categories for tools in the scRNA-tools database"
 
 cats %>%
     mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
+    mutate(Category = str_trim(Category)) %>%
+    mutate(Category = ifelse(Category == "U M Is", "UMIs", Category)) %>%
     arrange(Phase) %>%
     select(Phase, everything()) %>%
     kable(caption = cap)
@@ -427,6 +429,7 @@ cat.counts <- tools %>%
     left_join(cats, by = "Category") %>%
     mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
     mutate(Category = str_trim(Category)) %>%
+    mutate(Category = ifelse(Category == "U M Is", "UMIs", Category)) %>%
     mutate(Category = factor(Category, levels = Category))
 
 cats.plot <- ggplot(cat.counts,
@@ -492,6 +495,7 @@ cats.time.points <- tools %>%
     gather(key = Category, value = Count, -IsOld, -Size) %>%
     mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
     mutate(Category = str_trim(Category)) %>%
+    mutate(Category = ifelse(Category == "U M Is", "UMIs", Category)) %>%
     mutate(Category = factor(Category,
                              levels = rev(levels(cat.counts$Category)))) %>%
     group_by(IsOld) %>%
@@ -645,11 +649,14 @@ cats.tools.time.plot <- tools %>%
     unique() %>%
     group_by(IsOld) %>%
     mutate(Prop = Count / sum(Count)) %>%
+    ungroup() %>%
+    complete(IsOld, Cats, fill = list(Count = 0, Prop = 0)) %>%
     ggplot(aes(x = factor(Cats, levels = 1:14), y = Prop, fill = IsOld)) +
     geom_bar(stat = "identity", position = "dodge") +
     scale_fill_manual(name = "Date added",
                       labels = c("After 2016-10-01", "Before 2016-10-01"),
                       values = unname(pal)) +
+    scale_x_discrete(drop = FALSE) +
     scale_y_continuous(labels = scales::percent) +
     ggtitle("Categories per tool") +
     xlab("Number of categories") +

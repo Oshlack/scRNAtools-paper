@@ -90,7 +90,7 @@ brings a demand for new analysis methods. Not only does the scale of scRNA-seq
 datasets vastly outstrip bulk experiments but there are also a variety of
 challenges specific to the single-cell context. Specifically, scRNA-seq data is
 extremely sparse (there is no expression measured for many genes in most cells),
-contains large technical artifacts and the scientific questions of interest are
+contains large technical artefacts and the scientific questions of interest are
 often different to those asked of bulk RNA-seq datasets. For example many bulk
 RNA-seq datasets are generated to detect differentially expressed genes through
 a designed experiment while many scRNA-seq experiments aim to identify or
@@ -163,9 +163,18 @@ include_graphics("figures/tools_over_time.png")
 
 ## Publication status
 
-* Publication status
-* ~ half published, more as preprints
-* More older tools published, reflects publishing delay
+Most tools have been added to the scRNA-tools database after coming to our
+attention in a paper describing their method and use. Of all the tools in
+the database about half have been published in peer-reviewed journals and
+another third are described in preprint articles, typically on the bioRxiv
+preprint server. When the tools are divided by the date they were added to
+the scRNA-tools database we can see that the majority of older tools have
+been published while more recent tools are more likely to only be available as
+preprints. This is a good demonstration of the delay imposed by the traditional
+publication process. By publishing preprints and releasing software available
+via repostiories such as Github scRNA-seq tool developers make their methods
+available to the community much earlier, allowing them to be used for analysis
+and improved prior to formal publcation.
 
 ```{r plot-publication-status}
 pub.plot <- tools %>%
@@ -239,7 +248,7 @@ save_plot("figures/publication_status.pdf", panel, nrow = 1, ncol = 2,
           base_height = 8)
 ```
 
-```{r publication-status, fig.cap = "Publication status of tools in the scRNA-tools database. Over half of the tools in the full database have been published in peer-revewied journals while another third are available as preprints (A). When stratified by publication date we see that the majority of tools added before October 2016 are published, while the majority of newer tools are available as preprints (B). The number of unpublished tools has stayed consistent at around 10 percent."}
+```{r publication-status, fig.cap = "Publication status of tools in the scRNA-tools database. Over half of the tools in the full database have been published in peer-revewied journals while another third are available as preprints (A). When stratified by the date tools were added to the database we see that the majority of tools added before October 2016 are published, while the majority of newer tools are available as preprints (B). The number of unpublished tools has stayed consistent at around 10 percent."}
 include_graphics("figures/publication_status.png")
 ```
 
@@ -542,9 +551,9 @@ ggsave("figures/categories_time.pdf", cats.time.plot, height = 8)
 include_graphics("figures/categories_time.png")
 ```
 
-Some categories have seen a decrease in the proportion of tools they represent,
+Some categories have seen a decrease in the proportion of tools they represent, 
 most strikingly testing for expression patterns. This is likely related to the
-change in pseudotime analysis which is the focus of a slightly lower percentage
+change in pseudotime analysis which is the focus of a slightly lower percentage 
 of tools added after October 2016.
 
 Looking at the tools that can perform at least one task in an analysis phase we

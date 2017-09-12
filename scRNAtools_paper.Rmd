@@ -77,6 +77,18 @@ cats <- read_json("data/descriptions.json", simplifyVector = TRUE) %>%
 
 # Abstract
 
+As single-cell RNA-sequencing datasets have become available the number of
+analysis tools has dramatically increase. As new tools become available we
+have catalogued them in the scRNA-tools database (www.scRNA-tools.org). Tools
+are cateogorised according to the analysis tasks they perfom. Analysis of this
+database shows us that many tools perform tasks specific to scRNA-seq analysis,
+particularly clustering and ordering of cells. We find that the scRNA-seq
+analysis community takes an open-source approach with most tools making their
+code available under open-source licences and preprints being extensively used
+as a means to describe methods. The scRNA-tools database provides a resource
+for researchers approaching analysis of an scRNA-seq dataset and a record of the
+field over time.
+
 # Keywords
 
 # Introduction
@@ -123,6 +135,14 @@ and the associated software license. Tools are also categorised according to the
 analysis tasks they are able to perform. Most tools are added after a preprint
 or publication becomes available but some have been added after being mentioned
 on social media or in similar collections.
+
+Information about tools is displayed on a publicly available website at
+www.scRNA-tools.org. This website provides a profile for each tool, with links
+to publications and code repositories, as well as an index by analysis category.
+We also provide and interactive table that allows users to filter and sort tools
+in order to find those most relevant to their needs. Anyone wishing to
+contribute to the database can do so by submitting an issue to our Github page
+(https://github.com/Oshlack/scRNA-tools).
 
 When the database was first constructed there were 70 scRNA-seq analysis tools
 available, representing work in the field during the three years from the first
@@ -703,25 +723,42 @@ Some tools perform analyses that lie outside the common tasks performed on
 scRNA-seq data. Simulation is one alternative task that has already been
 mentioned but there is also a group of tools designed to detect variability
 apart from changes in expression. For example alternative splicing, single
-nucleotide [?] variants and allele-specific expression. While tools that
-complete these tasks are unlikely to ever dominate scRNA-seq analysis it is
-likely that we will see an increase in methods for tackling alternative problems
-as researchers continue to push the boundaries of what can be observed using
-scRNA-seq data.
+nucleotide [?] variants and allele-specific expression. Reconstruction of immune
+cell receptors is another area that has received considerable attention. While
+tools that complete these tasks are unlikely to ever dominate scRNA-seq analysis
+it is likely that we will see an increase in methods for tackling alternative
+problems as researchers continue to push the boundaries of what can be observed
+using scRNA-seq data.
 
 # Discussion and conclusions
 
-* Where to from here?
-    * More tools
-    * Improvements and updates
-    * New tasks
-    * New datasets
-        * Integration
-    * New technologies
-    * Reference databases
+Over the last year we have seen the number of number of software tools for
+analysing single-cell RNA-seq data double. As new tools have become available
+we have catalogued them in the scRNA-tools database where we record the analysis
+tasks that they can complete, along with additional information such as any
+associated publications. Tool developers have focused their efforts on methods
+for handling problems specific to scRNA-seq data, in particular clustering cells
+into groups or ordering them along a trajectory. We have seen that the scRNA-seq
+community is generally open and willing to share with methods being described
+in preprint prior to publication and most software being released under
+permissive open-source licenses.
 
-As scRNA-seq analysis matures we can expect some existing tools to continue to
-add functionality while others will cease to be updated and maintained.
+The next few years promise to continue to produce significant developments
+in scRNA-seq analysis. New tools will continue to be produced, becoming
+increasingly sophisticated and aiming to address more of the questions made
+possible by scRNA-seq data. Some existing tools will continue to improve and
+expand their functionality while others will cease to be updated and maintained.
+As single-cell capture and sequencing continues to develop tools will have to
+adapt to significantly larger datasets (in the millions of cells) which may
+require specialised data structrures and algorithms. Other types of single-
+cell data will become available and projects such as the Human Cell Atlas will
+provide comprehensive references, both of which will open up new avenues for
+analysis.
+
+As the field expands the scRNA-tools database will continue to be updated.
+We hope that it provides a resource for researchers approaching an scRNA-seq
+analysis as well as providing a record of the analyis landscape and how it
+changes over time.
 
 # Methods
 

@@ -137,20 +137,24 @@ date.totals <- tools %>%
     select(Date = Added) %>%
     group_by(Date = as.Date(Date)) %>%
     summarise(Count = n()) %>%
+    complete(Date = full_seq(Date, 1), fill = list(Count = 0)) %>%
     mutate(Total = cumsum(Count))
 
 totals.plot <- ggplot(date.totals, aes(x = Date, y = Total)) +
     geom_line(size = 2, colour = pal["purple"]) +
     xlab("Date") +
     ylab("Number of tools") +
+    scale_x_date(breaks = scales::pretty_breaks(10)) +
     ggtitle("Increase in tools over time") +
     theme_cowplot() +
     theme(plot.title = element_text(size = 20),
-          axis.text = element_text(size = 12)
+          axis.title.x = element_blank(),
+          axis.text = element_text(size = 12),
+          axis.text.x = element_text(angle = 90, vjust = 0.5)
     )
 
-ggsave("figures/tools_over_time.png", totals.plot, height = 5)
-ggsave("figures/tools_over_time.pdf", totals.plot, height = 5)
+ggsave("figures/tools_over_time.png", totals.plot, height = 6)
+ggsave("figures/tools_over_time.pdf", totals.plot, height = 6)
 ```
 
 ```{r tools-over-time, fig.cap = "Number of tools in the scRNA-tools database over time. Since the scRNA-seq tools database was started in September 2016 more than 60 new tools have been released."}
@@ -189,7 +193,7 @@ pub.plot <- tools %>%
     scale_colour_manual(values = unname(pal)) +
     ggtitle("Publication status") +
     theme_nothing() +
-    theme(plot.title = element_text(size = 20),
+    theme(plot.title = element_text(size = 30),
           legend.position = "none"
     )
 
@@ -276,7 +280,7 @@ license.plot <- tools %>%
     scale_colour_manual(values = c(unname(pal), "#999999")) +
     ggtitle("Software licenses") +
     theme_nothing() +
-    theme(plot.title = element_text(size = 20),
+    theme(plot.title = element_text(size = 30),
           legend.position = "none"
     )
 ```
@@ -441,7 +445,7 @@ cats.plot <- ggplot(cat.counts,
     ggtitle("Analysis categories") +
     theme_cowplot() +
     theme(axis.title.x = element_blank(),
-          legend.position = c(0.85, 0.75),
+          legend.position = c(0.85, 0.70),
           legend.title = element_text(size = 14),
           legend.text = element_text(size = 12),
           legend.key.size = unit(25, "points"),
@@ -450,8 +454,8 @@ cats.plot <- ggplot(cat.counts,
           axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
     )
 
-ggsave("figures/categories.png", cats.plot, height = 5)
-ggsave("figures/categories.pdf", cats.plot, height = 5)
+ggsave("figures/categories.png", cats.plot, height = 6)
+ggsave("figures/categories.pdf", cats.plot, height = 6)
 ```
 
 ```{r categories, fig.cap = "Categories of tools in the scRNA-tools database. Each tool can be assigned to multiple categories based on the tasks it can complete. Categories associated with multiple analysis phases (visualisation, dimensionality reduction) are the most common, followed by categories associated with the cell assignment phase (pseudotime, clustering)."}
@@ -526,7 +530,8 @@ cats.time.plot <- ggplot(cats.time.points, aes(x = Category)) +
           legend.text = element_text(size = 12),
           legend.key.size = unit(25, "points"),
           plot.title = element_text(size = 20),
-          axis.text = element_text(size = 12)
+          axis.text = element_text(size = 12),
+          plot.margin = unit(c(1, 1, 0.5, 0.5), "lines")
     )
 
 ggsave("figures/categories_time.png", cats.time.plot, height = 8)
@@ -555,16 +560,15 @@ protocols and performing alternative analysis tasks.
 
 ```{r plot-date-phases}
 phases.plot.date <- tools %>%
-    mutate(Phase1 = Quantification,
-           Phase2 = QualityControl | Normalisation | Imputation |
-               GeneFiltering | CellCycle,
-           Phase3 = Clustering | Classification | Ordering | RareCells |
-               StemCells,
-           Phase4 = DifferentialExpression | MarkerGenes | ExpressionPatterns |
-               VariableGenes | GeneSets | GeneNetworks,
+    mutate(Phase1 = Alignment | Assembly | Quantification | UMIs,
+           Phase2 = CellCycle | GeneFiltering | Imputation | Normalisation |
+               QualityControl,
+           Phase3 = Classification | Clustering | Ordering | RareCells | StemCells,
+           Phase4 = DifferentialExpression | ExpressionPatterns | GeneNetworks |
+               GeneSets | MarkerGenes | VariableGenes,
            Multiple = DimensionalityReduction | Visualisation | Interactive,
-           Other = Assembly | Transformation | Modality | AlternativeSplicing |
-               Variants | Haplotypes | AlleleSpecific | Simulation) %>%
+           Other = AlleleSpecific | AlternativeSplicing | Haplotypes | Immune |
+               Modality | Simulation | Transformation | Variants) %>%
     select(Date = Added, Phase1, Phase2, Phase3, Phase4, Multiple, Other) %>%
     gather(key = Phase, value = TF, -Date) %>%
     filter(TF == TRUE) %>%
@@ -576,12 +580,15 @@ phases.plot.date <- tools %>%
     select(Date, Phase) %>%
     group_by(Date, Phase) %>%
     summarise(PhaseCount = n()) %>%
+    ungroup() %>%
+    complete(Date = full_seq(Date, 1), Phase, fill = list(PhaseCount = 0)) %>%
     group_by(Phase) %>%
     mutate(PhaseTotal = cumsum(PhaseCount)) %>%
     left_join(date.totals, by = "Date") %>%
     mutate(Prop = PhaseTotal / Total) %>%
     ggplot(aes(x = Date, y = Prop, colour = Phase)) +
     geom_line(size = 2) +
+    scale_x_date(breaks = scales::pretty_breaks(10)) +
     scale_y_continuous(labels = scales::percent) +
     scale_colour_manual(values = phase.cols) +
     xlab("Date") +
@@ -590,12 +597,13 @@ phases.plot.date <- tools %>%
     theme_cowplot() +
     theme(plot.title = element_text(size = 20),
           axis.text = element_text(size = 12),
+          axis.text.x = element_text(angle = 90, vjust = 0.5),
           axis.title.x = element_blank(),
           legend.position = "right"
     )
 
-ggsave("figures/phases_date.png", phases.plot.date, height = 5)
-ggsave("figures/phases_date.pdf", phases.plot.date, height = 5)
+ggsave("figures/phases_date.png", phases.plot.date, height = 8)
+ggsave("figures/phases_date.pdf", phases.plot.date, height = 8)
 ```
 
 ```{r phases-over-time, fig.cap = "Changes in the percentage of tools associated with analysis phases over time. The percentage of tools involved in the data acquisition and data cleaning phases have increased, as have tools completed alternative analysis tasks. The gene identification phase has seen a relative decrease in the number of tools."}

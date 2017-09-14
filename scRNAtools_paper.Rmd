@@ -509,21 +509,23 @@ such as the likelihood ratio tests. While methods designed to test DE
 specifically in single-cell datasets do exist it is still unclear whether they
 do or do not improve on methods that have been established for bulk data.
 
-To investigate how the focus of scRNA-seq tool development has changed over time
-we again divided the scRNA-tools database into tools added before and after
-October 2016. This allowed us to see which analysis tasks are more common in
-recently published tools. We looked at the percentage of tools in each time
-period that performed tasks in the different analysis categories. Some
+To investigate how the focus of scRNA-seq tool development has changed over
+time we again divided the scRNA-tools database into tools added before and
+after October 2016. This allowed us to see which analysis tasks are more common
+in recently published tools. We looked at the percentage of tools in each
+time period that performed tasks in the different analysis categories. Some
 categories show little change in the proportion of tools that perform them but
 there are other areas with a more significant change over time. Specifically,
-both visualisation and dimensionality reduction are more commonly addressed by
-recent tools. The UMIs category has also seen a big increase recently as UMI
-based protocols have become commonly used and tools designed to handle the extra
-processing steps required have been developed. Simulation has always been used
-to test, develop and validate scRNA-seq tools but more packages are now
-including their simulation functions and some tools have been developed for the
-specific purpose of generating realistic synthetic scRNA-seq datasets. More
-tools are also identifying or making use of co-regulated gene networks.
+both visualisation and dimensionality reduction are more commonly addressed
+by recent tools. The UMIs category has also seen a big increase recently as
+UMI based protocols have become commonly used and tools designed to handle
+the extra processing steps required have been developed. Simulation has always
+been used to test, develop and validate scRNA-seq tools but more packages are
+now including their simulation functions and some tools have been developed
+for the specific purpose of generating realistic synthetic scRNA-seq datasets.
+Classification of cells in known groups has also increased as reference datasets
+become available and more tools are identifying or making use of co-regulated
+gene networks.
 
 ```{r plot-categories-time}
 cats.time.points <- tools %>%
@@ -651,20 +653,19 @@ include_graphics("figures/phases_date.png")
 ## Pipelines and toolboxes
 
 While there are a considerable number of scRNA-seq tools that only perform a
-single analysis task, many perform at least two. We find that older tools tend
-to specialise more while those that have been added more recently can perform a
-larger number of tasks. Some tools, such as XXXX are designed to be complete
-pipelines, taking raw sequencing reads and producing a report showing the
-results of a complete analysis. Others, such as XXXX, can be thought of as
-analysis toolboxes, able to complete a range of complex analyses starting with a
-gene expression matrix. Being able to complete multiple tasks using a single
-tool can simplify analysis as problems with converting between different data
-formats can be avoided, however it is important to remember that it is difficult
-for a tool with many functionalities to continue to represent the state of the
-art in all of them. Support for common data formats, such as the recently
-released SingleCellExperiment object in R, provides another way for developers
-to allow easy use of their tools and users to build custom workflows from
-specialised tools.
+single analysis task, many perform at least two. Some tools, such as XXXX are
+designed to be complete pipelines, taking raw sequencing reads and producing a
+report showing the results of a complete analysis. Others, such as XXXX, can be
+thought of as analysis toolboxes, able to complete a range of complex analyses
+starting with a gene expression matrix. Most of these tools that complete many
+tasks are more recent. Being able to complete multiple tasks using a single tool
+can simplify analysis as problems with converting between different data formats
+can be avoided, however it is important to remember that it is difficult for
+a tool with many functionalities to continue to represent the state of the art
+in all of them. Support for common data formats, such as the recently released
+SingleCellExperiment object in R, provides another way for developers to allow
+easy use of their tools and users to build custom workflows from specialised
+tools.
 
 ```{r plot-cats-tool}
 cats.tools.plot <- tools %>%
@@ -722,7 +723,7 @@ save_plot("figures/cats_per_tool.pdf", panel, nrow = 1, ncol = 2,
           base_height = 8)
 ```
 
-```{r cats-per-tool, fig.cap = "The number of categories associated with each tools in the scRNA-tools database. The majority of tools perform few tasks (A). When stratifying by the date tools were added to the database we an increase in the number of categories per tool for tools added at later dates (B)."}
+```{r cats-per-tool, fig.cap = "The number of categories associated with each tools in the scRNA-tools database. The majority of tools perform few tasks (A). Most tools that complete many tasks have are relatively recent. (B)."}
 include_graphics("figures/cats_per_tool.png")
 ```
 

@@ -430,7 +430,7 @@ biological insight. Descriptions of the categories in the scRNA-tools database
 are given in [TABLE], along with the associated analysis phases.
 
 ```{r categories-table}
-cap = "Descriptions of categories for tools in the scRNA-tools database"
+cap <- "Descriptions of categories for tools in the scRNA-tools database"
 
 cats %>%
     mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%

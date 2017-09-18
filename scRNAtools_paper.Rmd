@@ -793,19 +793,49 @@ how it changes over time.
 
 # Methods
 
+**Database**
+
+When new tools come to our attention they are added to the scRNA-tools database.
+DOIs and publication dates are recorded for any associated publications. As
+preprints may be frequently updated they are marked as a preprint instead
+of recording a date. The platform used to build the tool, links to code
+repositories, associated licenses and a short description are also recorded.
+Each tool is categorised according to the analysis tasks it can perform,
+receiving a true or false for each category based on what is described in the
+accompanying paper or documentation. We also record the date that each entry was
+added to the database and the date that it was last updated.
+
+**Website**
+
+To build the website we start with the table described above as a CSV file
+which is processed using an R script. The lists of packages available in the
+CRAN, Bioconductor and PyPI software repositories are downloaded and matched
+with tools in the database. For tools with peer-reviewed publications the
+number of citations they have received is retrieved from the Crossref database
+(www.crossref.org) using the rcrossref package (v0.7.0) [@Chamberlain2017-ov].
+JSON files describing the complete table, tools and categories are outputted and
+used to populate the website.
+
+**Analysis**
+
+The most recent version of the scRNA-tools database was used for the analysis
+presented in this paper. Data was manipulated in R using the dplyr package
+(v0.7.3) [@Wickham2017-ip] and plots produced using the ggplot2 (v2.2.1)
+[@Wickham2010-zq] and cowplot (v0.8.0) [@Wilke2017-zt] packages.
+
 # Declarations
 
-# Ethics
+## Ethics
 
 Not applicable.
 
-# Availability of data and materials
+## Availability of data and materials
 
-# Competing interests
+## Competing interests
 
 The authors declare no competing interests.
 
-# Funding
+## Funding
 
 Luke Zappia is supported by an Australian Government Research Training Program
 (RTP) Scholarship. Alicia Oshlack is supported through a National Health and
@@ -813,9 +843,9 @@ Medical Research Council Career Development Fellowship APP1126157. MCRI is
 supported by the Victorian Government's Operational Infrastructure Support
 Program.
 
-# Authors' contributions
+## Authors' contributions
 
-# Acknowledgements
+## Acknowledgements
 
 * Sean Davis
 * Licenses...

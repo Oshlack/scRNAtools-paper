@@ -816,6 +816,15 @@ number of citations they have received is retrieved from the Crossref database
 JSON files describing the complete table, tools and categories are outputted and
 used to populate the website.
 
+The website consists of three main pages. The home page shows an interactive
+table with the ability to sort, filter and download the database. The
+second page shows an entry for each tool, giving the description, details
+of publications, details of the software code and license and the associated
+software categories. Badges are added to tools to provide clearly visible
+details of any associated software or GitHub repositories. The final page
+describes the categories, providing easy access to the tools assoicated with
+them.
+
 **Analysis**
 
 The most recent version of the scRNA-tools database was used for the analysis

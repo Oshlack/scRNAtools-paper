@@ -831,6 +831,12 @@ Not applicable.
 
 ## Availability of data and materials
 
+The scRNA-tools databases is publicly accessible via the website at www.scRNA-
+tools.org. Suggestions for additions, updates and improvements are warmly
+welcomed at the associated GitHub repository (https://github.com/Oshlack/scRNA-
+tools). The code and datasets used for the analysis in this paper are available
+from https://github.com/Oshlack/scRNAtools-paper.
+
 ## Competing interests
 
 The authors declare no competing interests.
@@ -847,9 +853,12 @@ Program.
 
 ## Acknowledgements
 
-* Sean Davis
-* Licenses...
-* Breon
+We would like to acknowledge Sean Davis' work in managing the awesome-single-
+cell page and producing a prototype of the script used to process the database.
+Daniel Wells had the idea for recording software licenses and provided
+licenses for the tools in the database at that time. Breon Schmidt designed a
+prototype of the scRNA-tools website and answered many questions about HTML and
+Javascript.
 
 # Additional files
 

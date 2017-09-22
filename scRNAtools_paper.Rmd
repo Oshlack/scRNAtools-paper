@@ -45,13 +45,20 @@ library("jsonlite")
 library("tidyverse")
 ```
 
+```{r source}
+source("R/plotting.R")
+```
+
 ```{r palette}
-pal <- c(pink   = "#EC008C",  # Pink
-         blue   = "#00ADEF",  # Blue
-         green  = "#8DC63F",  # Green
-         teal   = "#00B7C6",  # Teal
-         orange = "#F47920",  # Orange
-         purple = "#7A52C7")  # Purple
+pal <- c(pink   = "#EC008C", # Pink
+         blue   = "#00ADEF", # Blue
+         green  = "#8DC63F", # Green
+         teal   = "#00B7C6", # Teal
+         orange = "#F47920", # Orange
+         purple = "#7A52C7", # Purple
+         grey   = "#999999") # Grey
+
+phase.pal <- c(brewer.pal(5, "Set1"), "#999999")
 ```
 
 ```{r load}
@@ -70,10 +77,28 @@ tools <- read_csv("data/single_cell_software.csv",
                   )) %>%
     mutate(IsOld = Added < "2016-10-01")
 
+date.counts <- tools %>%
+        select(Date = Added) %>%
+        group_by(Date = as.Date(Date)) %>%
+        summarise(Count = n()) %>%
+        complete(Date = full_seq(Date, 1), fill = list(Count = 0)) %>%
+        mutate(Total = cumsum(Count))
+
 cats <- read_json("data/descriptions.json", simplifyVector = TRUE) %>%
     mutate(Phase = factor(Phase,
                           levels = c("Phase 1", "Phase 2", "Phase 3", "Phase 4",
                                      "Multiple", "Other")))
+
+cat.counts <- tools %>%
+    summarise_at(8:38, sum) %>%
+    gather(key = Category, value = Count) %>%
+    arrange(-Count, Category) %>%
+    mutate(Prop = Count / nrow(tools)) %>%
+    left_join(cats, by = "Category") %>%
+    mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
+    mutate(Category = str_trim(Category)) %>%
+    mutate(Category = ifelse(Category == "U M Is", "UMIs", Category)) %>%
+    mutate(Category = factor(Category, levels = Category))
 ```
 
 # Abstract
@@ -157,38 +182,33 @@ When the database was first constructed there were 70 scRNA-seq analysis tools
 available, representing work in the field during the three years from the first
 published tool in November 2013 (SAMstrt [@Katayama2013-pq]) up to September
 2016. In the year since then over 60 new tools have been added (Figure
-\@ref(fig:tools-over-time)). The doubling of the number of available tools in
+\@ref(fig:overview-panel)A). The doubling of the number of available tools in
 such a short time demonstrates the booming interest in scRNA-seq and its
 maturation from a technique requiring custom-built equipment with specialised
 protocols to a commercially available product.
 
-```{r plot-tools-over-time}
-date.totals <- tools %>%
-    select(Date = Added) %>%
-    group_by(Date = as.Date(Date)) %>%
-    summarise(Count = n()) %>%
-    complete(Date = full_seq(Date, 1), fill = list(Count = 0)) %>%
-    mutate(Total = cumsum(Count))
+```{r make-overview-panel}
+number.plot <- plotToolsNumber(date.counts, pal)
+pub.plot <- plotPublication(tools, pal)
+pub.time.plot <- plotPubTime(tools, pal)
+licenses.plot <- plotLicenses(tools, pal)
+platforms.plot <- plotPlatforms(tools, pal)
 
-totals.plot <- ggplot(date.totals, aes(x = Date, y = Total)) +
-    geom_line(size = 2, colour = pal["purple"]) +
-    xlab("Date") +
-    ylab("Number of tools") +
-    scale_x_date(breaks = scales::pretty_breaks(10)) +
-    ggtitle("Increase in tools over time") +
-    theme_cowplot() +
-    theme(plot.title = element_text(size = 20),
-          axis.title.x = element_blank(),
-          axis.text = element_text(size = 12),
-          axis.text.x = element_text(angle = 90, vjust = 0.5)
-    )
+pub.panel <- plot_grid(pub.plot, pub.time.plot, nrow = 1, ncol = 2,
+                   labels = c("B", "C"))
+plat.panel <- plot_grid(platforms.plot, licenses.plot, nrow = 1, ncol = 2,
+                   labels = c("D", "E"))
+panel <- plot_grid(number.plot, pub.panel, plat.panel, nrow = 3, ncol = 1,
+                   labels = c("A", rep("", 4)))
 
-ggsave("figures/tools_over_time.png", totals.plot, height = 6)
-ggsave("figures/tools_over_time.pdf", totals.plot, height = 6)
+save_plot("figures/overview_panel.png", panel, nrow = 3, ncol = 2,
+          base_height = 8)
+save_plot("figures/overview_panel.pdf", panel, nrow = 3, ncol = 2,
+          base_height = 8)
 ```
 
-```{r tools-over-time, fig.cap = "Number of tools in the scRNA-tools database over time. Since the scRNA-seq tools database was started in September 2016 more than 60 new tools have been released."}
-include_graphics("figures/tools_over_time.png")
+```{r overview-panel, fig.cap = "(A) Number of tools in the scRNA-tools database over time. Since the scRNA-seq tools database was started in September 2016 more than 60 new tools have been released. (B) Publication status of tools in the scRNA-tools database. Over half of the tools in the full database have been published in peer-revewied journals while another third are available as preprints. (C) When stratified by the date tools were added to the database we see that the majority of tools added before October 2016 are published, while the majority of newer tools are available as preprints. The number of unpublished tools has stayed consistent at around 10 percent. (D) The majority of tools are available using either the R or Python programming languages. (E) Most tools are released under a standard open-source software license, with variants of the GNU Public License (GPL) being the most common. However licenses could not be found for a large proportion of tools."}
+include_graphics("figures/overview_panel.png")
 ```
 
 ## Publication status
@@ -197,196 +217,33 @@ Most tools have been added to the scRNA-tools database after coming to our
 attention in a paper describing their method and use. Of all the tools in the
 database about half have been published in peer-reviewed journals and another
 third are described in preprint articles, typically on the bioRxiv preprint
-server (Figure \@ref(fig:publication-status)A). Tools can be split into those
+server (Figure \@ref(fig:overview-panel)B). Tools can be split into those
 that were available when the database was created and those that have been added
 since. We can see that the majority of older tools have been published while
 more recent tools are more likely to only be available as preprints (Figure
-\@ref(fig:publication-status)B). This is a good demonstration of the delay
+\@ref(fig:overview-panel)C). This is a good demonstration of the delay
 imposed by the traditional publication process. By publishing preprints and
 releasing software via repositories such as GitHub scRNA-seq tool developers
 make their methods available to the community much earlier, allowing them to be
 used for analysis and their methods improved prior to formal publication.
 
-```{r plot-publication-status}
-pub.plot <- tools %>%
-    select(PubDate) %>%
-    mutate(IsPre = PubDate == "PREPRINT") %>%
-    mutate(IsPub = !is.na(PubDate) & !IsPre) %>%
-    mutate(IsNot = is.na(PubDate)) %>%
-    summarise(NotPublished = sum(IsNot),
-              Published = sum(IsPub, na.rm = TRUE),
-              Preprint = sum(IsPre, na.rm = TRUE)) %>%
-    gather(key = Type, value = Count) %>%
-    mutate(Type = factor(Type,
-                         levels = c("Published", "Preprint", "NotPublished"),
-                         labels = c("Published", "Preprint", "Not Published")),
-           Cumulative = cumsum(Count),
-           Midpoint = Cumulative - (Count / 2),
-           Label = paste0(Type, "\n",
-                          round(Count / sum(Count) * 100, 1), "%")) %>%
-    ggplot(aes(x = 1, weight = Count, fill = Type)) +
-    geom_bar(width = 1, position = "stack") +
-    coord_polar(theta = "y") +
-    geom_text(aes(x = 1.8, y = Midpoint, label = Label, colour = Type),
-              size = 6) +
-    scale_fill_manual(values = unname(pal)) +
-    scale_colour_manual(values = unname(pal)) +
-    ggtitle("Publication status") +
-    theme_nothing() +
-    theme(plot.title = element_text(size = 30),
-          legend.position = "none"
-    )
-
-pub.plot.time <- tools %>%
-    group_by(IsOld) %>%
-    select(PubDate, IsOld) %>%
-    mutate(IsPre = PubDate == "PREPRINT") %>%
-    mutate(IsPub = !is.na(PubDate) & !IsPre) %>%
-    mutate(IsNot = is.na(PubDate)) %>%
-    summarise(NotPublished = sum(IsNot),
-              Published = sum(IsPub, na.rm = TRUE),
-              Preprint = sum(IsPre, na.rm = TRUE)) %>%
-    gather(key = Type, value = Count, -IsOld) %>%
-    group_by(IsOld) %>%
-    mutate(Prop = Count / sum(Count)) %>%
-    mutate(Type = factor(Type,
-                         levels = c("Preprint", "Published", "NotPublished"),
-                         labels = c("Preprint", "Published", "Not Published"))) %>%
-    ggplot(aes(x = Type, y = Prop, fill = IsOld)) +
-    geom_bar(stat = "identity", position = "dodge") +
-    scale_fill_manual(name = "Date added",
-                      labels = c("After 2016-10-01", "Before 2016-10-01"),
-                      values = unname(pal)) +
-    scale_y_continuous(labels = scales::percent) +
-    ggtitle("Publication status over time") +
-    ylab("Percentage of tools") +
-    theme_cowplot() +
-    theme(legend.position = c(0.75, 0.85),
-          legend.title = element_text(size = 14),
-          legend.text = element_text(size = 12),
-          legend.key.size = unit(25, "points"),
-          plot.title = element_text(size = 20),
-          axis.text = element_text(size = 12),
-          axis.title.x = element_blank()
-    )
-
-panel <- plot_grid(pub.plot, pub.plot.time, nrow = 1, ncol = 2,
-                   labels = "AUTO")
-
-save_plot("figures/publication_status.png", panel, nrow = 1, ncol = 2,
-          base_height = 8)
-save_plot("figures/publication_status.pdf", panel, nrow = 1, ncol = 2,
-          base_height = 8)
-```
-
-```{r publication-status, fig.cap = "Publication status of tools in the scRNA-tools database. Over half of the tools in the full database have been published in peer-revewied journals while another third are available as preprints (A). When stratified by the date tools were added to the database we see that the majority of tools added before October 2016 are published, while the majority of newer tools are available as preprints (B). The number of unpublished tools has stayed consistent at around 10 percent."}
-include_graphics("figures/publication_status.png")
-```
-
 ## Platforms and licensing
-
-```{r plot-licenses}
-license.plot <- tools %>%
-    select(License) %>%
-    mutate(IsGPL = str_detect(License, "GPL"),
-           IsBSD = str_detect(License, "BSD"),
-           IsMIT = str_detect(License, "MIT"),
-           IsApache = str_detect(License, "Apache"),
-           IsArtistic = str_detect(License, "Artistic"),
-           IsUnknown = is.na(License),
-           IsOther = !(IsGPL | IsBSD | IsMIT | IsApache | IsArtistic |
-                           IsUnknown)) %>%
-    summarise(Apache = sum(IsApache, na.rm = TRUE),
-              Artistic = sum(IsArtistic, na.rm = TRUE),
-              BSD = sum(IsBSD, na.rm = TRUE),
-              GPL = sum(IsGPL, na.rm = TRUE),
-              MIT = sum(IsMIT, na.rm = TRUE),
-              Other = sum(IsOther),
-              Unknown = sum(IsUnknown)) %>%
-    gather(key = License, value = Count) %>%
-    mutate(License = factor(License,
-                            levels = c("Apache", "Artistic", "BSD", "GPL",
-                                       "MIT", "Other", "Unknown")),
-           Cumulative = cumsum(Count),
-           Midpoint = Cumulative - (Count / 2),
-           Label = paste0(License, "\n",
-                          round(Count / sum(Count) * 100, 1), "%")) %>%
-    ggplot(aes(x = 1, weight = Count, fill = License)) +
-    geom_bar(width = 1, position = "stack") +
-    coord_polar(theta = "y") +
-    geom_text(aes(x = 1.75, y = nrow(tools) - Midpoint, label = Label,
-                  colour = License), size = 6) +
-    scale_fill_manual(values = c(unname(pal), "#999999")) +
-    scale_colour_manual(values = c(unname(pal), "#999999")) +
-    ggtitle("Software licenses") +
-    theme_nothing() +
-    theme(plot.title = element_text(size = 30),
-          legend.position = "none"
-    )
-```
-
-```{r plot-platforms}
-platforms.plot <- tools %>%
-    select(Platform) %>%
-    mutate(IsR = str_detect(Platform, "R"),
-           IsPython = str_detect(Platform, "Python"),
-           IsMATLAB = str_detect(Platform, "MATLAB"),
-           IsCPP = str_detect(Platform, "C++"),
-           IsOther = !(IsR | IsPython | IsMATLAB | IsCPP)) %>%
-    summarise(R = sum(IsR),
-              Python = sum(IsPython),
-              MATLAB = sum(IsMATLAB),
-              CPP = sum(IsCPP),
-              Other = sum(IsOther)) %>%
-    gather(key = Platform, value = Count) %>%
-    mutate(Platform = factor(Platform,
-                             levels = c("R", "Python", "MATLAB", "CPP",
-                                        "Other"),
-                             labels = c("R", "Python", "MATLAB", "C++",
-                                        "Other"))) %>%
-    ggplot(aes(x = Platform, weight = Count, fill = Platform)) +
-    geom_bar(aes(y = (..count..) / sum(..count..))) +
-    scale_y_continuous(labels = scales::percent) +
-    scale_fill_manual(values = unname(pal)) +
-    ylab("Percentage of tools") +
-    ggtitle("Platforms used by analysis tools") +
-    theme_cowplot() +
-    theme(axis.title.x = element_blank(),
-          legend.position = "none",
-          plot.title = element_text(size = 20),
-          axis.text = element_text(size = 12)
-    )
-```
-
-```{r plot-platforms-licenses}
-panel <- plot_grid(platforms.plot, license.plot, nrow = 1, ncol = 2,
-                   labels = "AUTO")
-
-save_plot("figures/platforms_licenses.png", panel, nrow = 1, ncol = 2,
-          base_height = 8)
-save_plot("figures/platforms_licenses.pdf", panel, nrow = 1, ncol = 2,
-          base_height = 8)
-```
 
 Developers of scRNA-seq analysis tools have choices to make about what platforms
 they use to create their tools, how they make them available to the community
 and whether they share the source code. We find that the most commonly used
 platform for creating scRNA-seq analysis tools is the R statistical programming
 language, with many tools made available through the Bioconductor or CRAN
-repositories (Figure \@ref(fig:platforms-licenses)A). Python is the second most
+repositories (Figure \@ref(fig:overview-panel)D). Python is the second most
 popular language, followed by MATLAB, a commercially available product, and the
 lower-level C++. The use of R and Python is consistent with their popularity
 across a range of data science fields. In particular the popularity of R
 reflects its history as the language of choice for the analysis of bulk RNA-seq
 datasets and a range of other biological data types.
 
-```{r platforms-licenses, fig.cap = "The open-source nature of scRNA-seq analysis tools. The majority of tools are available using either the R or Python programming languages (A). Most tools are released under a standard open-source software license, with variants of the GNU Public License (GPL) being the most common (B). However licenses could not be found for a large proportion of tools."}
-include_graphics("figures/platforms_licenses.png")
-```
-
 The majority of tools in the scRNA-tools database have chosen to take an
 open-source approach, making their code available under permissive licenses
-(Figure \@ref(fig:platforms-licenses)B). We feel this reflects the general
+(Figure \@ref(fig:overview-panel)E). We feel this reflects the general
 underlying sentiment and willingness of the bioinformatics community to share
 and build upon the work of others. Variations of the GNU Public License (GPL)
 are the most common, covering almost half of tools. This license allows free
@@ -460,57 +317,41 @@ cats %>%
 
 Each of the tools in the database is assigned to one or more analysis
 categories. We investigated these categories in further detail to give insight
-into the trends in scRNA-seq analysis. Figure \@ref(fig:categories) shows the
-frequency of tools performing each of the analysis tasks. Visualisation is the
-most commonly included task and is important across all stages of analysis for
-exploring and displaying data and results. Tasks for assigning cells (ordering
-and clustering) are the next most common. This has been the biggest area of
-development in single-cell analysis with clustering tools such as Seurat
-[@Satija2015-or], SC3 [@Kiselev2017-an] and BackSPIN [@Zeisel2015-rd] being used
-to identify cell types in a sample and trajectory analysis tools (Monocle
+into the trends in scRNA-seq analysis. Figure \@ref(fig:categories-panel)A shows
+the frequency of tools performing each of the analysis tasks. Visualisation is
+the most commonly included task and is important across all stages of analysis
+for exploring and displaying data and results. Tasks for assigning cells
+(ordering and clustering) are the next most common. This has been the biggest
+area of development in single-cell analysis with clustering tools such as Seurat
+[@Satija2015-or], SC3 [@Kiselev2017-an] and BackSPIN [@Zeisel2015-rd] being
+used to identify cell types in a sample and trajectory analysis tools (Monocle
 [@Trapnell2014-he], Wishbone [@Setty2016-yh], DPT [@Haghverdi2016-zt]) being
 used to investigate how genes change across developmental processes. These areas
 reflect the new opportunities for analysis provided by single-cell data that are
 not possible with bulk RNA-seq experiments.
 
-```{r plot-categories}
-phase.cols <- c(brewer.pal(5, "Set1"), "#999999")
+```{r make-categories-panel}
+cats.plot <- plotCategories(cat.counts, phase.pal)
+cats.time.plot <- plotCatsTime(tools, cat.counts, pal)
+phases.date.plot <- plotPhasesDate(tools, date.count, phase.pal)
+cats.tools.plot <- plotCatsPerTool(tools, pal)
+cats.tools.time.plot <- plotCatsPerToolTime(tools, pal)
 
-cat.counts <- tools %>%
-    summarise_at(8:38, sum) %>%
-    gather(key = Category, value = Count) %>%
-    arrange(-Count) %>%
-    mutate(Prop = Count / nrow(tools)) %>%
-    left_join(cats, by = "Category") %>%
-    mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
-    mutate(Category = str_trim(Category)) %>%
-    mutate(Category = ifelse(Category == "U M Is", "UMIs", Category)) %>%
-    mutate(Category = factor(Category, levels = Category))
+cats.panel <- plot_grid(cats.time.plot, phases.date.plot, nrow = 1, ncol = 2,
+                        labels = c("B", "C"))
+tools.panel <- plot_grid(cats.tools.plot, cats.tools.time.plot, nrow = 1,
+                         ncol = 2,labels = c("D", "E"))
+panel <- plot_grid(cats.plot, cats.panel, tools.panel, nrow = 3, ncol = 1,
+                   labels = c("A", rep("", 4)), rel_heights = c(1.2, 1.2, 1))
 
-cats.plot <- ggplot(cat.counts,
-                    aes(x = Category, weight = Prop, fill = Phase)) +
-    geom_bar() +
-    scale_y_continuous(labels = scales::percent) +
-    scale_fill_manual(values = phase.cols) +
-    ylab("Percentage of tools") +
-    ggtitle("Analysis categories") +
-    theme_cowplot() +
-    theme(axis.title.x = element_blank(),
-          legend.position = c(0.85, 0.70),
-          legend.title = element_text(size = 14),
-          legend.text = element_text(size = 12),
-          legend.key.size = unit(25, "points"),
-          plot.title = element_text(size = 20),
-          axis.text = element_text(size = 12),
-          axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
-    )
-
-ggsave("figures/categories.png", cats.plot, height = 6)
-ggsave("figures/categories.pdf", cats.plot, height = 6)
+save_plot("figures/categories_panel.png", panel, nrow = 3, ncol = 2,
+          base_height = 8)
+save_plot("figures/categories_panel.pdf", panel, nrow = 3, ncol = 2,
+          base_height = 8)
 ```
 
-```{r categories, fig.cap = "Categories of tools in the scRNA-tools database. Each tool can be assigned to multiple categories based on the tasks it can complete. Categories associated with multiple analysis phases (visualisation, dimensionality reduction) are among the most common, as are categories associated with the cell assignment phase (ordering, clustering)."}
-include_graphics("figures/categories.png")
+```{r categories-panel, fig.cap = "(A) Categories of tools in the scRNA-tools database. Each tool can be assigned to multiple categories based on the tasks it can complete. Categories associated with multiple analysis phases (visualisation, dimensionality reduction) are among the most common, as are categories associated with the cell assignment phase (ordering, clustering). (B) Changes in analysis categories over time, comparing tools added before and after October 2016. There have been significant increases in the percentage of tools associated with visualisation, dimensionality reduction, quantification and simulation. Categories including expression patterns, pseudotime and interactivity have seen relative decreases. (C) Changes in the percentage of tools associated with analysis phases over time. The percentage of tools involved in the data acquisition and data cleaning phases have increased, as have tools designed for alternative analysis tasks. The gene identification phase has seen a relative decrease in the number of tools. (D) The number of categories associated with each tools in the scRNA-tools database. The majority of tools perform few tasks. (E) Most tools that complete many tasks are relatively recent."}
+include_graphics("figures/categories_panel.png")
 ```
 
 Dimensionality reduction is also a common task and has applications in
@@ -534,7 +375,7 @@ we again divided the scRNA-tools database into tools added before and after
 October 2016. This allowed us to see which analysis tasks are more common in
 recently published tools. We looked at the percentage of tools in each time
 period that performed tasks in the different analysis categories
-(\@ref(fig:categories-time)). Some categories show little change in the
+(Figure \@ref(fig:categories-panel)B). Some categories show little change in the
 proportion of tools that perform while other areas have changed significantly.
 Specifically, both visualisation and dimensionality reduction are more commonly
 addressed by recent tools. The UMIs category has also seen a big increase
@@ -549,58 +390,6 @@ cells into known groups has also increased as reference datasets become
 available and more tools are identifying or making use of co-regulated gene
 networks.
 
-```{r plot-categories-time}
-cats.time.points <- tools %>%
-    group_by(IsOld) %>%
-    mutate(Size = n()) %>%
-    group_by(IsOld, Size) %>%
-    summarise_at(8:38, sum) %>%
-    gather(key = Category, value = Count, -IsOld, -Size) %>%
-    mutate(Category = str_replace_all(Category, "([[:upper:]])", " \\1")) %>%
-    mutate(Category = str_trim(Category)) %>%
-    mutate(Category = ifelse(Category == "U M Is", "UMIs", Category)) %>%
-    mutate(Category = factor(Category,
-                             levels = rev(levels(cat.counts$Category)))) %>%
-    group_by(IsOld) %>%
-    mutate(Prop = Count / Size)
-
-cats.time.changes <- cats.time.points %>%
-    select(Category, IsOld, Prop) %>%
-    spread(IsOld, Prop) %>%
-    rename(Old = `TRUE`, New = `FALSE`) %>%
-    mutate(Decrease = New < Old)
-
-cats.time.plot <- ggplot(cats.time.points, aes(x = Category)) +
-    geom_linerange(data = cats.time.changes,
-                   aes(ymin = Old, ymax = New, colour = Decrease),
-                   size = 4.5, alpha = 0.3) +
-    geom_point(aes(y = Prop, colour = IsOld), size = 4) +
-    scale_color_manual(name = "Date added",
-                       labels = c("After 2016-10-01", "Before 2016-10-01"),
-                       values = unname(pal)) +
-    scale_y_continuous(labels = scales::percent) +
-    coord_flip() +
-    ylab("Percentage of tools") +
-    ggtitle("Analysis categories") +
-    theme_cowplot() +
-    theme(axis.title.y = element_blank(),
-          legend.position = c(0.7, 0.2),
-          legend.title = element_text(size = 14),
-          legend.text = element_text(size = 12),
-          legend.key.size = unit(25, "points"),
-          plot.title = element_text(size = 20),
-          axis.text = element_text(size = 12),
-          plot.margin = unit(c(1, 1, 0.5, 0.5), "lines")
-    )
-
-ggsave("figures/categories_time.png", cats.time.plot, height = 8)
-ggsave("figures/categories_time.pdf", cats.time.plot, height = 8)
-```
-
-```{r categories-time, fig.cap = "Changes in analysis categories over time, comparing tools added before and after October 2016. There have been significant increases in the percentage of tools associated with visualisation, dimensionality reduction, quantification and simulation. Categories including expression patterns, pseudotime and interactivity have seen relative decreases."}
-include_graphics("figures/categories_time.png")
-```
-
 Some categories have seen a decrease in the proportion of tools they represent,
 most strikingly testing for changes expression patterns along a trajectory. This
 is likely related to the change in cell ordering analysis which is the focus of
@@ -610,7 +399,7 @@ decrease in the development of these tools could indicate that researchers have
 moved on to other techniques or that use has converged on a set of mature tools.
 
 By grouping categories based on their associated analysis phases we see similar
-trends over time (\@ref(fig:phases-over-time)). We see increases in the
+trends over time (Figure \@ref(fig:categories-panel)C). We see increases in the
 percentage of tools performing tasks in Phase 1 (quantification), Phase 2
 (quality control and filtering), across multiple phases (visualisation and
 dimensionality reduction) and alternative analysis tasks. In contrast the
@@ -621,136 +410,25 @@ performing standard scRNA-seq analyses are deemed sufficient while there is
 still room for development in handling data from new protocols and performing
 alternative analysis tasks.
 
-```{r plot-date-phases}
-phases.plot.date <- tools %>%
-    mutate(Phase1 = Alignment | Assembly | Quantification | UMIs,
-           Phase2 = CellCycle | GeneFiltering | Imputation | Normalisation |
-               QualityControl,
-           Phase3 = Classification | Clustering | Ordering | RareCells | StemCells,
-           Phase4 = DifferentialExpression | ExpressionPatterns | GeneNetworks |
-               GeneSets | MarkerGenes | VariableGenes,
-           Multiple = DimensionalityReduction | Visualisation | Interactive,
-           Other = AlleleSpecific | AlternativeSplicing | Haplotypes | Immune |
-               Modality | Simulation | Transformation | Variants) %>%
-    select(Date = Added, Phase1, Phase2, Phase3, Phase4, Multiple, Other) %>%
-    gather(key = Phase, value = TF, -Date) %>%
-    filter(TF == TRUE) %>%
-    mutate(Phase = factor(Phase,
-                          levels = c("Phase1", "Phase2", "Phase3", "Phase4",
-                                     "Multiple", "Other"),
-                          labels = c("Phase 1", "Phase 2", "Phase 3", "Phase 4",
-                                     "Multiple", "Other"))) %>%
-    select(Date, Phase) %>%
-    group_by(Date, Phase) %>%
-    summarise(PhaseCount = n()) %>%
-    ungroup() %>%
-    complete(Date = full_seq(Date, 1), Phase, fill = list(PhaseCount = 0)) %>%
-    group_by(Phase) %>%
-    mutate(PhaseTotal = cumsum(PhaseCount)) %>%
-    left_join(date.totals, by = "Date") %>%
-    mutate(Prop = PhaseTotal / Total) %>%
-    ggplot(aes(x = Date, y = Prop, colour = Phase)) +
-    geom_line(size = 2) +
-    scale_x_date(breaks = scales::pretty_breaks(10)) +
-    scale_y_continuous(labels = scales::percent) +
-    scale_colour_manual(values = phase.cols) +
-    xlab("Date") +
-    ylab("Percentage of tools") +
-    ggtitle("Analysis phases over time") +
-    theme_cowplot() +
-    theme(plot.title = element_text(size = 20),
-          axis.text = element_text(size = 12),
-          axis.text.x = element_text(angle = 90, vjust = 0.5),
-          axis.title.x = element_blank(),
-          legend.position = "right"
-    )
-
-ggsave("figures/phases_date.png", phases.plot.date, height = 8)
-ggsave("figures/phases_date.pdf", phases.plot.date, height = 8)
-```
-
-```{r phases-over-time, fig.cap = "Changes in the percentage of tools associated with analysis phases over time. The percentage of tools involved in the data acquisition and data cleaning phases have increased, as have tools designed for alternative analysis tasks. The gene identification phase has seen a relative decrease in the number of tools."}
-include_graphics("figures/phases_date.png")
-```
-
 ## Pipelines and toolboxes
 
 While there are a considerable number of scRNA-seq tools that only perform a
-single analysis task, many perform at least two (\@ref(fig:cats-per-tool)A).
-Some tools (dropEst [@Petukhov2017-lm], DrSeq2 [@Zhao2017-ju], scPipe
-[@Tian2017-zl]) are preprocessing pipelines, taking raw sequencing reads and
-producing an expression matrix. Others, such as Scanpy [@Alexander_Wolf2017-hp],
-SCell [@Diaz2016-fz], Seurat, Monocle and scater [@McCarthy2017-ql] can be
-thought of as analysis toolboxes, able to complete a range of complex analyses
-starting with a gene expression matrix. Most of the tools that complete many
-tasks are more recent (\@ref(fig:cats-per-tool)B). Being able to complete
-multiple tasks using a single tool can simplify analysis as problems with
-converting between different data formats can be avoided, however it is
-important to remember that it is difficult for a tool with many functionalities
-to continue to represent the state of the art in all of them. Support for common
-data formats, such as the recently released SingleCellExperiment object in R
-[@Lun2017-jj], provides another way for developers to allow easy use of their
-tools and users to build custom workflows from specialised tools.
-
-```{r plot-cats-tool}
-cats.tools.plot <- tools %>%
-    select(Name, 8:38) %>%
-    gather(key = Category, value = TF, -Name) %>%
-    group_by(Name) %>%
-    summarise(Count = sum(TF)) %>%
-    ggplot(aes(x = factor(Count, levels = 1:14))) +
-    geom_bar(fill = pal["purple"]) +
-    scale_x_discrete(drop = FALSE) +
-    ggtitle("Number of categories per tool") +
-    xlab("Number of categories") +
-    ylab("Number of tools") +
-    theme_cowplot() +
-    theme(plot.title = element_text(size = 20),
-          axis.text = element_text(size = 12)
-    )
-
-cats.tools.time.plot <- tools %>%
-    select(Name, IsOld, 8:38) %>%
-    gather(key = Category, value = TF, -Name, -IsOld) %>%
-    group_by(Name, IsOld) %>%
-    summarise(Cats = sum(TF)) %>%
-    ungroup() %>%
-    select(-Name) %>%
-    group_by(IsOld, Cats) %>%
-    mutate(Count = n()) %>%
-    unique() %>%
-    group_by(IsOld) %>%
-    mutate(Prop = Count / sum(Count)) %>%
-    ungroup() %>%
-    complete(IsOld, Cats, fill = list(Count = 0, Prop = 0)) %>%
-    ggplot(aes(x = factor(Cats, levels = 1:14), y = Prop, fill = IsOld)) +
-    geom_bar(stat = "identity", position = "dodge") +
-    scale_fill_manual(name = "Date added",
-                      labels = c("After 2016-10-01", "Before 2016-10-01"),
-                      values = unname(pal)) +
-    scale_x_discrete(drop = FALSE) +
-    scale_y_continuous(labels = scales::percent) +
-    ggtitle("Categories per tool by date added") +
-    xlab("Number of categories") +
-    ylab("Percentage of tools") +
-    theme_cowplot() +
-    theme(plot.title = element_text(size = 20),
-          axis.text = element_text(size = 12),
-          legend.position = c(0.7, 0.7)
-    )
-
-panel <- plot_grid(cats.tools.plot, cats.tools.time.plot, nrow = 1, ncol = 2,
-                   labels = "AUTO")
-
-save_plot("figures/cats_per_tool.png", panel, nrow = 1, ncol = 2,
-          base_height = 8)
-save_plot("figures/cats_per_tool.pdf", panel, nrow = 1, ncol = 2,
-          base_height = 8)
-```
-
-```{r cats-per-tool, fig.cap = "The number of categories associated with each tools in the scRNA-tools database. The majority of tools perform few tasks (A). Most tools that complete many tasks are relatively recent. (B)."}
-include_graphics("figures/cats_per_tool.png")
-```
+single analysis task, many perform at least two (Figure
+\@ref(fig:categories-panel)D). Some tools (dropEst [@Petukhov2017-lm], DrSeq2 
+[@Zhao2017-ju], scPipe [@Tian2017-zl]) are preprocessing pipelines, taking raw 
+sequencing reads and producing an expression matrix. Others, such as Scanpy 
+[@Alexander_Wolf2017-hp], SCell [@Diaz2016-fz], Seurat, Monocle and scater 
+[@McCarthy2017-ql] can be thought of as analysis toolboxes, able to complete a
+range of complex analyses starting with a gene expression matrix. Most of the
+tools that complete many tasks are more recent (Figure 
+\@ref(fig:categories-panel)E). Being able to complete multiple tasks using a
+single tool can simplify analysis as problems with converting between different
+data formats can be avoided, however it is important to remember that it is 
+difficult for a tool with many functionalities to continue to represent the
+state of the art in all of them. Support for common data formats, such as the 
+recently released SingleCellExperiment object in R [@Lun2017-jj], provides
+another way for developers to allow easy use of their tools and users to build 
+custom workflows from specialised tools.
 
 ## Alternative analyses
 

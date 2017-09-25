@@ -135,6 +135,11 @@
     "Description": "Assignment of receptor sequences and immune cell clonality"
   },
   {
+    "Category": "Integration",
+    "Phase": "Other",
+    "Description": "Combining of scRNA-seq datasets or integration with other single-cell data types"
+  },
+  {
     "Category": "Modality",
     "Phase": "Other",
     "Description": "Identification or use of modality in gene expression"

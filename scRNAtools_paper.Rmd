@@ -1,10 +1,10 @@
 ---
 title: "Exploring the single-cell RNA-seq analysis landscape"
 author:
-- Luke Zappia
-- Belinda Phipson
-- Alicia Oshlack
-date: "`r Sys.Date()`"
+- Luke Zappia (1, 2)
+- Belinda Phipson (1)
+- Alicia Oshlack (1, 2)
+date: "1. Bioinformatics, Murdoch Children's Research Institute; 2. School of Biosciences, University of Melbourne"
 output:
     bookdown::word_document2:
         reference_docx: style/style.docx

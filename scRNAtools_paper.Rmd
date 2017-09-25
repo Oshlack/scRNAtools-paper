@@ -4,7 +4,7 @@ author:
 - Luke Zappia (1, 2)
 - Belinda Phipson (1)
 - Alicia Oshlack (1, 2)
-date: "1. Bioinformatics, Murdoch Children's Research Institute; 2. School of Biosciences, University of Melbourne"
+date: "1 Bioinformatics, Murdoch Children's Research Institute; 2 School of Biosciences, University of Melbourne"
 output:
     bookdown::word_document2:
         reference_docx: style/style.docx
@@ -171,12 +171,13 @@ being mentioned on social media or in similar collections such as Sean Davis'
 awesome-single-cell page (https://github.com/seandavi/awesome-single-cell).
 
 Information about tools is displayed on a publicly available website at
-www.scRNA-tools.org. This website provides a profile for each tool, with links
-to publications and code repositories, as well as an index by analysis category.
-We also provide an interactive table that allows users to filter and sort tools
-to find those most relevant to their needs. Anyone wishing to contribute to the
-database can do so by submitting an issue to the project GitHub page
-(https://github.com/Oshlack/scRNA-tools).
+www.scRNA-tools.org. This website provides a profile for each tool, with
+links to publications and code repositories, as well as an index by analysis
+category. We also provide an interactive table that allows users to filter and
+sort tools to find those most relevant to their needs. A final page shows live
+and up-to-date version of some of the analysis presented below. Anyone wishing
+to contribute to the database can do so by submitting an issue to the project
+GitHub page (https://github.com/Oshlack/scRNA-tools).
 
 When the database was first constructed there were 70 scRNA-seq analysis tools
 available, representing work in the field during the three years from the first
@@ -260,23 +261,24 @@ their work can be reused.
 
 # Categories of scRNA-seq analysis
 
-A typical scRNA-seq analysis can be divided into a number of phases, each of
-which consists of various tasks which can be completed using a variety of
-analysis tools. In the scRNA-tools database we categorise tools based on the
-analysis tasks they perform which can be broadly grouped into four different
-phases of analysis (Figure \@ref(fig:analysis-phases)). The data acquisition
-phase is the first and takes the raw nucleotide sequences from the sequencing
-experiment and returns a matrix describing the expression of each gene (rows) in
-each cell (columns). This phase consists of tasks common to bulk RNA-seq
-experiments, such as alignment to a reference genome or transcriptome and
-quantification of expression, but is often extended to handle Unique Molecular
-Identifiers (UMIs). Once an expression matrix has been obtained it is vital to
-make sure the resulting data is of high enough quality. In the data cleaning
-phase (Phase 2) quality control of cells is performed as well as filtering of
-uninformative genes. Additional tasks may be performed to normalise the data or
-impute missing values and exploratory analysis is often performed in this phase,
-such as viewing the datasets in reduced dimensions to look for underlying
-structure.
+As has been described in previous reviews a standard scRNA-seq analysis consists
+of several tasks which can be completed using various tools [@Bacher2016-
+en, @Wagner2016-zm, @Miragaia2017-tq, @Poirion2016-da, @Rostom2017-dc]. In
+the scRNA-tools database we categorise tools based on the analysis tasks they
+perform. Here we group these tasks into four broad phases of analysis: data
+acquisition, data cleaning, cell assignment and gene identification (Figure
+\@ref(fig:analysis-phases)). The data acquisition phase (Phase 1) takes the
+raw nucleotide sequences from the sequencing experiment and returns a matrix
+describing the expression of each gene (rows) in each cell (columns). This
+phase consists of tasks common to bulk RNA-seq experiments, such as alignment
+to a reference genome or transcriptome and quantification of expression, but is
+often extended to handle Unique Molecular Identifiers (UMIs). Once an expression
+matrix has been obtained it is vital to make sure the resulting data is of high
+enough quality. In the data cleaning phase (Phase 2) quality control of cells
+is performed as well as filtering of uninformative genes. Additional tasks may
+be performed to normalise the data or impute missing values. Exploratory data
+analysis tasks are often performed in this phase, such as viewing the datasets
+in reduced dimensions to look for underlying structure.
 
 The high-quality expression matrix is the focus of the next phases of analysis.
 In Phase 3 cells are assigned, either to discrete groups via clustering or along
@@ -382,7 +384,7 @@ addressed by recent tools. The UMIs category has also seen a big increase
 recently as UMI based protocols have become commonly used and tools designed to
 handle the extra processing steps required have been developed (UMI-tools
 [@Smith2017-nz], umis [@Svensson2017-zo], zUMIs [@Parekh2017-hq]). Simulation is
-a valuable technique for devloping, testing and validating scRNA-seq tools. More
+a valuable technique for developing, testing and validating scRNA-seq tools. More
 packages are now including their simulation functions and some tools have been
 developed for the specific purpose of generating realistic synthetic scRNA-seq
 datasets (powsimR [@Vieth2017-il], Splatter [@Zappia2017-sg]). Classification of
@@ -469,7 +471,7 @@ to improve and expand their functionality while others will cease to be updated
 and maintained. Detailed benchmarking and comparisons will show how tools
 perform in different situations and those that perform well, continue to be
 developed and provide a good user experience will become preferred for standard
-anlyses. As single-cell capture and sequencing technology continues to improve
+analyses. As single-cell capture and sequencing technology continues to improve
 analysis tools will have to adapt to significantly larger datasets (in the
 millions of cells) which may require specialised data structures and algorithms.
 Methods for combining multiple scRNA-seq datasets as well as integration of
@@ -514,7 +516,7 @@ second page shows an entry for each tool, giving the description, details
 of publications, details of the software code and license and the associated
 software categories. Badges are added to tools to provide clearly visible
 details of any associated software or GitHub repositories. The final page
-describes the categories, providing easy access to the tools assoicated with
+describes the categories, providing easy access to the tools associated with
 them.
 
 **Analysis**

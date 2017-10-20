@@ -6,10 +6,8 @@ Data and analysis for the scRNA-tools paper
 Directory structure
 --------------------
 
-* `analysis` - Analysis files and output
 * `data` - Input data files
 * `figures` - Figures used in the main paper
-* `output` - Additional intermediate files
 * `R` - R functions used in analysis
 * `style` - Document style files
 
@@ -21,25 +19,19 @@ The `data` directory contains the following files:
 * `descriptions.json` - Descriptions of analysis categories
 * `single_cell_software.csv` - Table of analysis tools
 
-Analysis
---------
-
-The code for completing the analysis shown in the paper is provided as the
-following Rmarkdown files in the analysis directory:
-
-* `database.Rmd` - Analysis of the scRNA-tools database 
-
 R
 ---
 
 This directory contains the following functions used in the analysis:
 
-* `.R`
+* `plotting.R` - Functions for producing the plots in the paper
 
 Style
 -----
 
+* `references.bib` - Bibliography database
+* `nature.csl` - Bibliography style file
 * `style.docx` - Reference DOCX style file
 * `style.Rmd` - Reference Rmd style file
-* `references.bib` - Bibliography database
+* `style_refs.bib` - Bibligraphy for the reference style
 

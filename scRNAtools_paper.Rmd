@@ -1,5 +1,5 @@
 ---
-title: "Exploring the single-cell RNA-seq analysis landscape"
+title: "Exploring the single-cell RNA-seq analysis landscape with the scRNA-tools database"
 author:
 - Luke Zappia (1, 2)
 - Belinda Phipson (1)
@@ -117,9 +117,8 @@ are developed to perform tasks specific to scRNA-seq analysis, particularly
 clustering and ordering of cells. We also find that the scRNA-seq community
 embraces an open-source approach, with most tools available under open-source
 licenses and preprints being extensively used as a means to describe methods.
-The scRNA-seq tools database provides a valuable resource for researchers
-embarking on scRNA-seq analysis and as a record of the growth of the field over
-time.
+The scRNA-tools database provides a valuable resource for researchers embarking
+on scRNA-seq analysis and as a record of the growth of the field over time.
 
 # Keywords
 
@@ -182,7 +181,7 @@ GitHub page (https://github.com/Oshlack/scRNA-tools).
 When the database was first constructed there were 70 scRNA-seq analysis tools
 available, representing work in the field during the three years from the first
 published tool in November 2013 (SAMstrt [@Katayama2013-pq]) up to September
-2016. In the year since then over 60 new tools have been added (Figure
+2016. In the year since then over 70 new tools have been added (Figure
 \@ref(fig:overview-panel)A). The doubling of the number of available tools in
 such a short time demonstrates the booming interest in scRNA-seq and its
 maturation from a technique requiring custom-built equipment with specialised
@@ -208,7 +207,7 @@ save_plot("figures/figure1_overview_panel.pdf", panel, nrow = 3, ncol = 2,
           base_height = 8)
 ```
 
-```{r overview-panel, fig.cap = "(A) Number of tools in the scRNA-tools database over time. Since the scRNA-seq tools database was started in September 2016 more than 60 new tools have been released. (B) Publication status of tools in the scRNA-tools database. Over half of the tools in the full database have been published in peer-revewied journals while another third are available as preprints. (C) When stratified by the date tools were added to the database we see that the majority of tools added before October 2016 are published, while the majority of newer tools are available as preprints. The number of unpublished tools has stayed consistent at around 10 percent. (D) The majority of tools are available using either the R or Python programming languages. (E) Most tools are released under a standard open-source software license, with variants of the GNU Public License (GPL) being the most common. However licenses could not be found for a large proportion of tools."}
+```{r overview-panel, fig.cap = "(A) Number of tools in the scRNA-tools database over time. Since the scRNA-seq tools database was started in September 2016 more than 70 new tools have been released. (B) Publication status of tools in the scRNA-tools database. Over half of the tools in the full database have been published in peer-revewied journals while another third are available as preprints. (C) When stratified by the date tools were added to the database we see that the majority of tools added before October 2016 are published, while the majority of newer tools are available as preprints. The number of unpublished tools has stayed consistent at around 10 percent. (D) The majority of tools are available using either the R or Python programming languages. (E) Most tools are released under a standard open-source software license, with variants of the GNU Public License (GPL) being the most common. However licenses could not be found for a large proportion of tools."}
 include_graphics("figures/figure1_overview_panel.png")
 ```
 
@@ -326,11 +325,12 @@ for exploring and displaying data and results. Tasks for assigning cells
 (ordering and clustering) are the next most common. This has been the biggest
 area of development in single-cell analysis with clustering tools such as Seurat
 [@Satija2015-or], SC3 [@Kiselev2017-an] and BackSPIN [@Zeisel2015-rd] being
-used to identify cell types in a sample and trajectory analysis tools (Monocle
-[@Trapnell2014-he], Wishbone [@Setty2016-yh], DPT [@Haghverdi2016-zt]) being
-used to investigate how genes change across developmental processes. These areas
-reflect the new opportunities for analysis provided by single-cell data that are
-not possible with bulk RNA-seq experiments.
+used to identify cell types in a sample and trajectory analysis tools (for
+example Monocle [@Trapnell2014-he], Wishbone [@Setty2016-yh] and
+DPT [@Haghverdi2016-zt]) being used to investigate how genes change across 
+developmental processes. These areas reflect the new opportunities for analysis 
+provided by single-cell data that are not possible with bulk RNA-seq
+experiments.
 
 ```{r make-categories-panel}
 cats.plot <- plotCategories(cat.counts, phase.pal)
@@ -367,10 +367,10 @@ as sophisticated as the rigorous statistical frameworks of tools developed for
 bulk RNA-seq such as edgeR [@Robinson2010-pt, @McCarthy2012-gc], DESeq2
 [@Love2014-tw] and limma [@Ritchie2015-te], often using simple statistical tests
 such as the likelihood ratio test. While methods designed to test DE
-specifically in single-cell datasets do exist (SCDE [@Kharchenko2014-tb], scDD
-[@Korthauer2016-yq]) it is still unclear whether they improve on methods that
-have been established for bulk data [@Soneson2017-gh, @Jaakkola2016-ko,
-@Miao2016-eo, @Dal_Molin2017-pl].
+specifically in single-cell datasets do exist (such as
+SCDE [@Kharchenko2014-tb], and scDD [@Korthauer2016-yq]) it is still unclear 
+whether they improve on methods that have been established for bulk data 
+[@Soneson2017-gh, @Jaakkola2016-ko, @Miao2016-eo, @Dal_Molin2017-pl].
 
 To investigate how the focus of scRNA-seq tool development has changed over time
 we again divided the scRNA-tools database into tools added before and after

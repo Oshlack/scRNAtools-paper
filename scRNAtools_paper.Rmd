@@ -62,19 +62,10 @@ phase.pal <- c(brewer.pal(5, "Set1"), "#999999")
 ```
 
 ```{r load}
-tools <- read_csv("data/single_cell_software.csv",
-                  col_types = cols(
-                      .default = col_logical(),
-                      Name = col_character(),
-                      Platform = col_character(),
-                      DOI = col_character(),
-                      PubDate = col_character(),
-                      Code = col_character(),
-                      Description = col_character(),
-                      License = col_character(),
-                      Added = col_date(format = ""),
-                      Updated = col_date(format = "")
-                  )) %>%
+tools <- read_json("data/tools-table.json", simplifyVector = TRUE) %>%
+    select(-Refs) %>%
+    mutate(Added = as.Date(Added),
+           Updated = as.Date(Updated)) %>%
     mutate(IsOld = Added < "2016-10-01")
 
 date.counts <- tools %>%

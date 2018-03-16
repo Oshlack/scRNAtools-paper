@@ -21,13 +21,13 @@ plotPublication <- function(tools, pal) {
     pub.labels <- c("Published", "Preprint", "Not Published")
 
     plot.data <- tools %>%
-        select(PubDate) %>%
-        mutate(IsPre = PubDate == "PREPRINT") %>%
-        mutate(IsPub = !is.na(PubDate) & !IsPre) %>%
-        mutate(IsNot = is.na(PubDate)) %>%
-        summarise(NotPublished = sum(IsNot),
-                  Published = sum(IsPub, na.rm = TRUE),
-                  Preprint = sum(IsPre, na.rm = TRUE)) %>%
+        mutate(Publications = if_else(is.na(Publications), 0L, Publications),
+               Preprints = if_else(is.na(Preprints), 0L, Preprints)) %>%
+        summarise(NotPublished = sum(Preprints == 0 & Publications == 0,
+                                     na.rm = TRUE),
+                  Published = sum(Publications > 0, na.rm = TRUE),
+                  Preprint = sum(Preprints > 0 & Publications == 0,
+                                 na.rm = TRUE)) %>%
         gather(key = Type, value = Count) %>%
         mutate(Type = factor(Type, levels = pub.levels,
                              labels = pub.labels)) %>%
@@ -59,13 +59,14 @@ plotPubTime <- function(tools, pal) {
 
     plot.data <- tools %>%
         group_by(IsOld) %>%
-        select(PubDate, IsOld) %>%
-        mutate(IsPre = PubDate == "PREPRINT") %>%
-        mutate(IsPub = !is.na(PubDate) & !IsPre) %>%
-        mutate(IsNot = is.na(PubDate)) %>%
-        summarise(NotPublished = sum(IsNot),
-                  Published = sum(IsPub, na.rm = TRUE),
-                  Preprint = sum(IsPre, na.rm = TRUE)) %>%
+        mutate(Publications = if_else(is.na(Publications), 0L, Publications),
+               Preprints = if_else(is.na(Preprints), 0L, Preprints)) %>%
+        summarise(NotPublished = sum(Preprints == 0 & Publications == 0,
+                                     na.rm = TRUE),
+                  Published = sum(Publications > 0, na.rm = TRUE),
+                  Preprint = sum(Preprints > 0 & Publications == 0,
+                                 na.rm = TRUE)) %>%
+        select(IsOld, NotPublished, Published, Preprint) %>%
         gather(key = Type, value = Count, -IsOld) %>%
         group_by(IsOld) %>%
         mutate(Prop = Count / sum(Count)) %>%

@@ -158,7 +158,9 @@ source code and the associated software license. Tools are also categorised
 according to the analysis tasks they are able to perform. Most tools are added
 after a preprint or publication becomes available but some have been added after
 being mentioned on social media or in similar collections such as Sean Davis'
-awesome-single-cell page (https://github.com/seandavi/awesome-single-cell).
+awesome-single-cell page (https://github.com/seandavi/awesome-single-cell). We
+welcome contrubutions to the database from the wider community via our GitHub
+repository or the submission form on the scRNA-tools website.
 
 Information about tools is displayed on a publicly available website at
 www.scRNA-tools.org. This website provides a profile for each tool, with
@@ -252,29 +254,31 @@ their work can be reused.
 
 # Categories of scRNA-seq analysis
 
-As has been described in previous reviews a standard scRNA-seq analysis consists
-of several tasks which can be completed using various tools [@Bacher2016-en,
-@Wagner2016-zm, @Miragaia2017-tq, @Poirion2016-da, @Rostom2017-dc]. In
-the scRNA-tools database we categorise tools based on the analysis tasks they
-perform. Here we group these tasks into four broad phases of analysis: data
-acquisition, data cleaning, cell assignment and gene identification (Figure
-\@ref(fig:analysis-phases)). The data acquisition phase (Phase 1) takes the
-raw nucleotide sequences from the sequencing experiment and returns a matrix
+Single-cell RNA-sequencing is often used to explore complex mixtures of cell
+types in an unsupervised manner. As has been described in previous reviews a
+standard scRNA-seq analysis in this setting consists of several tasks which can
+be completed using various tools [@Bacher2016-en, @Wagner2016-zm,
+@Miragaia2017-tq, @Poirion2016-da, @Rostom2017-dc]. In the scRNA-tools database
+we categorise tools based on the analysis tasks they perform. Here we group
+these tasks into four broad phases of analysis: data acquisition, data
+cleaning, cell assignment and gene identification (Figure
+\@ref(fig:analysis-phases)). The data acquisition phase (Phase 1) takes the raw
+nucleotide sequences from the sequencing experiment and returns a matrix
 describing the expression of each gene (rows) in each cell (columns). This
 phase consists of tasks common to bulk RNA-seq experiments, such as alignment
 to a reference genome or transcriptome and quantification of expression, but is
-often extended to handle Unique Molecular Identifiers (UMIs). Once an expression
-matrix has been obtained it is vital to make sure the resulting data is of high
-enough quality. In the data cleaning phase (Phase 2) quality control of cells
-is performed as well as filtering of uninformative genes. Additional tasks may
-be performed to normalise the data or impute missing values. Exploratory data
-analysis tasks are often performed in this phase, such as viewing the datasets
-in reduced dimensions to look for underlying structure.
+often extended to handle Unique Molecular Identifiers (UMIs). Once an
+expression matrix has been obtained it is vital to make sure the resulting data
+is of high enough quality. In the data cleaning phase (Phase 2) quality control
+of cells is performed as well as filtering of uninformative genes. Additional
+tasks may be performed to normalise the data or impute missing values.
+Exploratory data analysis tasks are often performed in this phase, such as
+viewing the datasets in reduced dimensions to look for underlying structure.
 
 The high-quality expression matrix is the focus of the next phases of analysis.
 In Phase 3 cells are assigned, either to discrete groups via clustering or along
 a continuous trajectory from one cell type to another. As high-quality reference
-datasets become available it will also become feasible to classify cell directly
+datasets become available it will also become feasible to classify cells directly
 into different cell types. Once cells have been assigned attention turns to
 interpreting what those assignments mean. Identifying interesting genes (Phase
 4), such as those that are differentially expressed across groups, marker genes
@@ -284,15 +288,19 @@ then be interpreted to give meaning to the experiment, either by investigating
 the genes themselves or by getting a higher level view through techniques such
 as gene set testing.
 
-```{r analysis-phases, fig.cap = "Phases of the scRNA-seq analysis process. In Phase 1 (data acquisition) raw sequencing reads are converted into a gene by cell expression matrix. For many protocols this requires the alignment of genes to a reference genome and the assignment and de-duplication of Unique Molecular Identifiers (UMIs). The data is then cleaned (Phase 2) to remove low-quality cells and uninformative genes, resulting in a high-quality dataset for further analysis. The data can also be normalised and missing values imputed during this phase. Phase 3 assigns cells, either in a discrete manner to known (classification) or unknown (clustering) groups or to a position on a continuous trajectory. Interesting genes (eg. differentially expressed, markers, specific patterns of expression) are then identified to explain these groups or trajectories (Phase 4)."}
+```{r analysis-phases, fig.cap = "Phases of the typical scRNA-seq analysis process. In Phase 1 (data acquisition) raw sequencing reads are converted into a gene by cell expression matrix. For many protocols this requires the alignment of genes to a reference genome and the assignment and de-duplication of Unique Molecular Identifiers (UMIs). The data is then cleaned (Phase 2) to remove low-quality cells and uninformative genes, resulting in a high-quality dataset for further analysis. The data can also be normalised and missing values imputed during this phase. Phase 3 assigns cells, either in a discrete manner to known (classification) or unknown (clustering) groups or to a position on a continuous trajectory. Interesting genes (eg. differentially expressed, markers, specific patterns of expression) are then identified to explain these groups or trajectories (Phase 4)."}
 include_graphics("figures/figure2_phase_diagram.png")
 ```
 
 While there are other approaches that could be taken to analyse scRNA-seq data
 these phases represent the most common path from raw sequencing reads to
-biological insight. Descriptions of the categories in the scRNA-tools database
-are given in Table \@ref(tab:categories-table), along with the associated
-analysis phases.
+biological insight for many studies. An exception to this may be experiments
+designed to test a specific hypothesis where cell populations may have been
+sorted or the interest lies in differences between experimental conditions
+rather than cell types. In this case Phase 3 may not be required and slightly
+different tools or approaches may be used by many of the same challenges will
+apply. Descriptions of the categories in the scRNA-tools database are given in
+Table \@ref(tab:categories-table), along with the associated analysis phases.
 
 ```{r categories-table}
 cap <- "Descriptions of categories for tools in the scRNA-tools database"
@@ -397,7 +405,7 @@ trends over time (Figure \@ref(fig:categories-panel)C). We see increases in the
 percentage of tools performing tasks in Phase 1 (quantification), across
 multiple phases (visualisation and dimensionality reduction) and alternative
 analysis tasks. In contrast the percentage of tools that perform gene
-identification tasks (Phase 2) has decreased and the percentage assigning cells
+identification tasks (Phase 4) has decreased and the percentage assigning cells
 (Phase 3) has remained steady. Phase 2 (quality control and filtering) has
 flucuated over time be currently sits at a similar level to when the database
 was first created. This too may indicate a maturation of the analysis space as
@@ -443,18 +451,18 @@ continue to push the boundaries of what can be observed using scRNA-seq data.
 
 # Discussion and conclusions
 
-Over the last year we have seen the number of number of software tools for
-analysing single-cell RNA-seq data double, with more than 200 analysis tools now
+Over the last year we have seen the number of software tools for analysing
+single-cell RNA-seq data double, with more than 200 analysis tools now
 available. As new tools have become available we have curated and catalogued
 them in the scRNA-tools database where we record the analysis tasks that they
 can complete, along with additional information such as any associated
-publications. By analysing this database we have found that tool developers have
-focused much of their efforts on methods for handling new problems specific to
-scRNA-seq data, in particular clustering cells into groups or ordering them
-along a trajectory. We have also seen that the scRNA-seq community is generally
-open and willing to share their methods which are often described in preprints
-prior to peer-reviewed publication and released under permissive open-source
-licenses for other researchers to re-use.
+publications. By analysing this database we have found that tool developers
+have focused much of their efforts on methods for handling new problems
+specific to scRNA-seq data, in particular clustering cells into groups or
+ordering them along a trajectory. We have also seen that the scRNA-seq
+community is generally open and willing to share their methods which are often
+described in preprints prior to peer-reviewed publication and released under
+permissive open-source licenses for other researchers to re-use.
 
 The next few years promise to continue to produce significant new developments
 in scRNA-seq analysis. New tools will continue to be produced, becoming

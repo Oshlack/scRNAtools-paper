@@ -203,7 +203,7 @@ plotCatsTime <- function(tools, cat.counts, pal) {
         group_by(IsOld) %>%
         mutate(Size = n()) %>%
         group_by(IsOld, Size) %>%
-        summarise_at(8:38, sum) %>%
+        summarise_at(8:39, sum) %>%
         gather(key = Category, value = Count, -IsOld, -Size) %>%
         mutate(Category = str_replace_all(Category,
                                           "([[:upper:]])", " \\1")) %>%
@@ -306,7 +306,7 @@ plotPhasesDate <- function(tools, data.counts, pal) {
 
 plotCatsPerTool <- function(tools, pal) {
     plot.data <- tools %>%
-        select(Name, 8:38) %>%
+        select(Name, 8:39) %>%
         gather(key = Category, value = TF, -Name) %>%
         group_by(Name) %>%
         summarise(Count = sum(TF))
@@ -328,7 +328,7 @@ plotCatsPerTool <- function(tools, pal) {
 
 plotCatsPerToolTime <- function(tools, pal) {
     plot.data <- tools %>%
-        select(Name, IsOld, 8:38) %>%
+        select(Name, IsOld, 8:39) %>%
         gather(key = Category, value = TF, -Name, -IsOld) %>%
         group_by(Name, IsOld) %>%
         summarise(Cats = sum(TF)) %>%

@@ -199,6 +199,7 @@ plotCategories <- function(cat.counts, pal) {
 }
 
 plotCatsTime <- function(tools, cat.counts, pal) {
+
     cats.time.points <- tools %>%
         group_by(IsOld) %>%
         mutate(Size = n()) %>%
@@ -226,18 +227,22 @@ plotCatsTime <- function(tools, cat.counts, pal) {
     cats.time.plot <- ggplot(cats.time.points, aes(x = Category)) +
         geom_linerange(data = cats.time.changes,
                        aes(ymin = Old, ymax = New, colour = Decrease),
-                       size = 4.5, alpha = 0.3) +
-        geom_point(aes(y = Prop, colour = IsOld), size = 4) +
-        scale_color_manual(name = "Date added",
-                           labels = c("Before 2016-10-01", "After 2016-10-01"),
-                           values = unname(pal)) +
+                       size = 4.5) +
+        geom_point(aes(y = Prop, fill = IsOld), size = 4, shape = 21,
+                   colour = "white") +
+        scale_fill_manual(name = "Date added",
+                          labels = c("Before 2016-10-01", "After 2016-10-01"),
+                          values = unname(pal)) +
+        scale_color_manual(name = "Direction",
+                           labels = c("Decreasing", "Increasing"),
+                           values = scales::muted(unname(pal), l = 85)) +
         scale_y_continuous(labels = scales::percent) +
         coord_flip() +
         ylab("Percentage of tools") +
         ggtitle("Change in analysis categories") +
         theme_cowplot() +
         theme(axis.title.y = element_blank(),
-              legend.position = c(0.7, 0.2),
+              legend.position = c(0.7, 0.3),
               legend.title = element_text(size = 14),
               legend.text = element_text(size = 12),
               legend.key.size = unit(25, "points"),

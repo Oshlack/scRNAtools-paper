@@ -475,6 +475,10 @@ community is generally open and willing to share their methods which are often
 described in preprints prior to peer-reviewed publication and released under
 permissive open-source licenses for other researchers to re-use.
 
+- Focus of development
+- Unmet need
+- Challenges -> solved
+
 The next few years promise to continue to produce significant new developments
 in scRNA-seq analysis. New tools will continue to be produced, becoming
 increasingly sophisticated and aiming to address more of the questions made

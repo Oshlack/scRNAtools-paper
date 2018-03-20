@@ -11,7 +11,7 @@ output:
 bibliography: style/references.bib
 ---
 
-^1^ Bioinformatics, Murdoch Children's Research Institute, Melbourne, Victoria, 
+^1^ Bioinformatics, Murdoch Children's Research Institute, Melbourne, Victoria,
 Australia
 
 ^2^ School of Biosciences, Faculty of Science, University of Melbourne,
@@ -130,7 +130,7 @@ Single-cell RNA-sequencing (scRNA-seq) has rapidly gained traction as an
 effective tool for interrogating the transcriptome at the resolution of
 individual cells. Since the first protocols were published in 2009
 [@Tang2009-jd] the number of cells profiled in individual scRNA-seq experiments
-has increased exponentially, outstripping Moore’s Law [@Svensson2017-es]. This
+has increased exponentially, outstripping Moore’s Law [@Svensson2018-dx]. This
 new kind of transcriptomic data brings a demand for new analysis methods. Not
 only does the scale of scRNA-seq datasets vastly outstrip bulk experiments but
 there are also a variety of challenges unique to the single-cell context
@@ -381,7 +381,7 @@ such as the likelihood ratio test. While methods designed to test DE
 specifically in single-cell datasets do exist (such as
 SCDE [@Kharchenko2014-tb], and scDD [@Korthauer2016-yq]) it is still unclear
 whether they improve on methods that have been established for bulk data
-[@Soneson2017-gh, @Jaakkola2016-ko, @Miao2016-eo, @Dal_Molin2017-pl].
+[@Soneson2018-fb, @Jaakkola2016-ko, @Miao2016-eo, @Dal_Molin2017-pl].
 
 To investigate how the focus of scRNA-seq tool development has changed over
 time we again divided the scRNA-tools database into tools added before and
@@ -398,7 +398,7 @@ handle the extra processing steps required have been developed (UMI-tools
 is a valuable technique for developing, testing and validating scRNA-seq tools.
 More packages are now including their simulation functions and some tools have
 been developed for the specific purpose of generating realistic synthetic
-scRNA-seq datasets (powsimR [@Vieth2017-il], Splatter [@Zappia2017-sg]).
+scRNA-seq datasets (powsimR [@Vieth2017-vc], Splatter [@Zappia2017-sg]).
 Classification of cells into known groups has also increased as reference
 datasets become available and more tools are identifying or making use of
 co-regulated gene networks.
@@ -431,7 +431,7 @@ single analysis task, many perform at least two (Fig
 \@ref(fig:categories-panel)D). Some tools (dropEst [@Petukhov2017-lm], DrSeq2
 [@Zhao2017-ju], scPipe [@Tian2017-zl]) are pre-processing pipelines, taking raw
 sequencing reads and producing an expression matrix. Others, such as Scanpy
-[@Alexander_Wolf2017-hp], SCell [@Diaz2016-fz], Seurat, Monocle and scater
+[@Wolf2018-na], SCell [@Diaz2016-fz], Seurat, Monocle and scater
 [@McCarthy2017-ql] can be thought of as analysis toolboxes, able to complete a
 range of complex analyses starting with a gene expression matrix. Most of the
 tools that complete many tasks are more recent (Fig

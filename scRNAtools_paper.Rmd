@@ -205,14 +205,14 @@ plat.panel <- plot_grid(platforms.plot, licenses.plot, nrow = 1, ncol = 2,
 panel <- plot_grid(number.plot, pub.panel, plat.panel, nrow = 3, ncol = 1,
                    labels = c("A", rep("", 4)))
 
-save_plot("figures/figure1_overview_panel.png", panel, nrow = 3, ncol = 2,
+save_plot("figures/Fig1_overview_panel.png", panel, nrow = 3, ncol = 2,
           base_height = 8)
-save_plot("figures/figure1_overview_panel.pdf", panel, nrow = 3, ncol = 2,
+save_plot("figures/Fig1_overview_panel.eps", panel, nrow = 3, ncol = 2,
           base_height = 8)
 ```
 
 ```{r overview-panel, fig.cap = "(A) Number of tools in the scRNA-tools database over time. Since the scRNA-seq tools database was started in September 2016 more than 130 new tools have been released. (B) Publication status of tools in the scRNA-tools database. Over half of the tools in the full database have at least one published peer-revirew paper while another third are described in preprints. (C) When stratified by the date tools were added to the database we see that the majority of tools added before October 2016 are published, while the around half of newer tools are available as preprints. Newer tools are also more likely to be unpublished in any form. (D) The majority of tools are available using either the R or Python programming languages. (E) Most tools are released under a standard open-source software license, with variants of the GNU Public License (GPL) being the most common. However licenses could not be found for a large proportion of tools."}
-include_graphics("figures/figure1_overview_panel.png")
+include_graphics("figures/Fig1_overview_panel.png")
 ```
 
 ## Publication status
@@ -300,7 +300,7 @@ the genes themselves or by getting a higher level view through techniques such
 as gene set testing.
 
 ```{r analysis-phases, fig.cap = "Phases of the typical scRNA-seq analysis process. In Phase 1 (data acquisition) raw sequencing reads are converted into a gene by cell expression matrix. For many protocols this requires the alignment of genes to a reference genome and the assignment and de-duplication of Unique Molecular Identifiers (UMIs). The data is then cleaned (Phase 2) to remove low-quality cells and uninformative genes, resulting in a high-quality dataset for further analysis. The data can also be normalised and missing values imputed during this phase. Phase 3 assigns cells, either in a discrete manner to known (classification) or unknown (clustering) groups or to a position on a continuous trajectory. Interesting genes (eg. differentially expressed, markers, specific patterns of expression) are then identified to explain these groups or trajectories (Phase 4)."}
-include_graphics("figures/figure2_phase_diagram.png")
+include_graphics("figures/Fig2_phase_diagram.png")
 ```
 
 While there are other approaches that could be taken to analyse scRNA-seq data
@@ -357,14 +357,14 @@ tools.panel <- plot_grid(cats.tools.plot, cats.tools.time.plot, nrow = 1,
 panel <- plot_grid(cats.plot, cats.panel, tools.panel, nrow = 3, ncol = 1,
                    labels = c("A", rep("", 4)), rel_heights = c(1.2, 1.2, 1))
 
-save_plot("figures/figure3_categories_panel.png", panel, nrow = 3, ncol = 2,
+save_plot("figures/Fig3_categories_panel.png", panel, nrow = 3, ncol = 2,
           base_height = 8)
-save_plot("figures/figure3_categories_panel.pdf", panel, nrow = 3, ncol = 2,
+save_plot("figures/Fig3_categories_panel.eps", panel, nrow = 3, ncol = 2,
           base_height = 8)
 ```
 
 ```{r categories-panel, fig.cap = "(A) Categories of tools in the scRNA-tools database. Each tool can be assigned to multiple categories based on the tasks it can complete. Categories associated with multiple analysis phases (visualisation, dimensionality reduction) are among the most common, as are categories associated with the cell assignment phase (ordering, clustering). (B) Changes in analysis categories over time, comparing tools added before and after October 2016. There have been significant increases in the percentage of tools associated with visualisation, dimensionality reduction, gene networks and simulation. Categories including expression patterns, ordering and interactivity have seen relative decreases. (C) Changes in the percentage of tools associated with analysis phases over time. The percentage of tools involved in the data acquisition and data cleaning phases have increased, as have tools designed for alternative analysis tasks. The gene identification phase has seen a relative decrease in the number of tools. (D) The number of categories associated with each tools in the scRNA-tools database. The majority of tools perform few tasks. (E) Most tools that complete many tasks are relatively recent."}
-include_graphics("figures/figure3_categories_panel.png")
+include_graphics("figures/Fig3_categories_panel.png")
 ```
 
 Dimensionality reduction is also a common task and has applications in

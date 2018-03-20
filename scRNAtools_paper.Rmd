@@ -7,7 +7,7 @@ author:
 output:
     bookdown::word_document2:
         reference_docx: style/style.docx
-        pandoc_args: [ "--csl", "style/vancouver.csl" ]
+        pandoc_args: [ "--csl", "style/plos-computational-biology.csl" ]
 bibliography: style/references.bib
 ---
 

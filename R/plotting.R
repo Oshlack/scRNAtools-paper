@@ -1,7 +1,7 @@
 plotToolsNumber <- function(data.counts, pal) {
 
     number.plot <- ggplot(date.counts, aes(x = Date, y = Total)) +
-        geom_line(size = 2, colour = pal["purple"]) +
+        geom_line(size = 4, colour = pal["purple"]) +
         xlab("Date") +
         ylab("Number of tools") +
         scale_x_date(breaks = scales::pretty_breaks(10)) +
@@ -9,8 +9,9 @@ plotToolsNumber <- function(data.counts, pal) {
         theme_cowplot() +
         theme(plot.title = element_text(size = 20),
               axis.title.x = element_blank(),
-              axis.text = element_text(size = 12),
-              axis.text.x = element_text(angle = 90, vjust = 0.5)
+              axis.text = element_text(size = 16),
+              axis.title = element_text(size = 18),
+              axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)
         )
 
     return(number.plot)
@@ -88,7 +89,8 @@ plotPubTime <- function(tools, pal) {
               legend.text = element_text(size = 12),
               legend.key.size = unit(25, "points"),
               plot.title = element_text(size = 20),
-              axis.text = element_text(size = 12),
+              axis.text = element_text(size = 16),
+              axis.title = element_text(size = 18),
               axis.title.x = element_blank()
         )
 }
@@ -129,7 +131,7 @@ plotLicenses <- function(tools, pal) {
                       colour = License), size = 6) +
         scale_fill_manual(values = unname(pal)) +
         scale_colour_manual(values = unname(pal)) +
-        ggtitle("Software licenses") +
+        ggtitle("Associated software licenses") +
         theme_nothing() +
         theme(plot.title = element_text(size = 20, face = "bold"),
               legend.position = "none"
@@ -170,7 +172,8 @@ plotPlatforms <- function(tools, pal) {
         theme(axis.title.x = element_blank(),
               legend.position = "none",
               plot.title = element_text(size = 20),
-              axis.text = element_text(size = 12)
+              axis.text = element_text(size = 16),
+              axis.title = element_text(size = 18)
         )
 
     return(platforms.plot)
@@ -191,8 +194,9 @@ plotCategories <- function(cat.counts, pal) {
               legend.text = element_text(size = 12),
               legend.key.size = unit(25, "points"),
               plot.title = element_text(size = 20),
-              axis.text = element_text(size = 12),
-              axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
+              axis.text = element_text(size = 16),
+              axis.title = element_text(size = 18),
+              axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)
         )
 
     return(cats.plot)
@@ -247,7 +251,8 @@ plotCatsTime <- function(tools, cat.counts, pal) {
               legend.text = element_text(size = 12),
               legend.key.size = unit(25, "points"),
               plot.title = element_text(size = 20),
-              axis.text = element_text(size = 12),
+              axis.text = element_text(size = 16),
+              axis.title = element_text(size = 18),
               plot.margin = unit(c(1, 1, 0.5, 0.5), "lines")
         )
 
@@ -300,8 +305,9 @@ plotPhasesDate <- function(tools, data.counts, pal) {
         ggtitle("Analysis phases over time") +
         theme_cowplot() +
         theme(plot.title = element_text(size = 20),
-              axis.text = element_text(size = 12),
-              axis.text.x = element_text(angle = 90, vjust = 0.5),
+              axis.text = element_text(size = 16),
+              axis.title = element_text(size = 18),
+              axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
               axis.title.x = element_blank(),
               legend.position = "right"
         )
@@ -325,7 +331,8 @@ plotCatsPerTool <- function(tools, pal) {
         ylab("Number of tools") +
         theme_cowplot() +
         theme(plot.title = element_text(size = 20),
-              axis.text = element_text(size = 12)
+              axis.text = element_text(size = 16),
+              axis.title = element_text(size = 18)
         )
 
     return(cats.tools.plot)
@@ -362,7 +369,8 @@ plotCatsPerToolTime <- function(tools, pal) {
         ylab("Percentage of tools") +
         theme_cowplot() +
         theme(plot.title = element_text(size = 20),
-              axis.text = element_text(size = 12),
+              axis.text = element_text(size = 16),
+              axis.title = element_text(size = 18),
               legend.position = c(0.7, 0.7)
         )
 

@@ -20,3 +20,7 @@ additional
 # Manuscript
 *.docx
 drafts
+*.pdf
+
+VSCode
+.vscode

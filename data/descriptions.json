@@ -17,7 +17,7 @@
   {
     "Category": "Quantification",
     "Phase": "Phase 1",
-    "Description": "Quantification of expression from reads, including handling unique molecular identifiers"
+    "Description": "Quantification of expression from reads"
   },
   {
     "Category": "QualityControl",
@@ -82,7 +82,7 @@
   {
     "Category": "GeneNetworks",
     "Phase": "Phase 4",
-    "Description": "Identification of co-regulated gene networks"
+    "Description": "Identification or use of co-regulated gene networks"
   },
   {
     "Category": "GeneSets",

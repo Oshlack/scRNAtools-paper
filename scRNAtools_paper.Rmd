@@ -122,7 +122,21 @@ scRNA-seq analysis and records of the growth of the field over time.
 
 # Author summary
 
-**WRITE SOMETHING HERE**
+In recent years single-cell RNA-sequeing technologies have emerged that allow
+scientists to measure the activity of genes in individual cells. This means we
+start to look at what each cell in a sample is doing instead of considering an
+average across all cells as was the case with older technologies. However, while
+access to this kind of data presents a wealth of opportunities it comes with
+a new set of challenges. Researchers across the world have developed new
+methods and software tools to make the most of these datasets but the field is
+moving at such a rapid pace it is difficult to keep up with what is currently
+available. To make this easier we have developed the scRNA-tools database and
+website (www.scRNA-tools.org). Our database catalogues analysis tools, recording
+the tasks they can be used for, where they can be downloaded from and the
+publications that describe how they work. By looking at this database we can
+see that developers have focued on methods specific to single-cell data and that
+they embrace an open-source approach with permissive licensing, sharing of code
+and preprint publications.
 
 # Introduction
 
@@ -580,7 +594,10 @@ Program.
 
 ## Authors' contributions
 
-***WRITE SOMETHING HERE**
+LZ developed the scRNA-tools database and website. BP contributed to
+supervision of the project. AO oversaw all aspects of the project. All authors
+contributed to drafting the manuscript. All authors read and approved the final
+manuscript.
 
 ## Acknowledgements
 

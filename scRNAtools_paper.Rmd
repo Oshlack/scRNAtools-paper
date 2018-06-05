@@ -403,13 +403,13 @@ the most commonly included task and is important across all stages of analysis
 for exploring and displaying data and results. Tasks for assigning cells
 (ordering and clustering) are the next most common. This has been the biggest
 area of development in single-cell analysis with clustering tools such as
-Seurat [@Satija2015-or; Butler2017-lb], SC3 [@Kiselev2017-an] and BackSPIN
+Seurat [@Satija2015-or; @Butler2017-lb], SC3 [@Kiselev2017-an] and BackSPIN
 [@Zeisel2015-rd] being used to identify cell types in a sample and trajectory
-analysis tools (for example Monocle [@Trapnell2014-he; Qiu2017-bi; Qiu2017-mq],
-Wishbone [@Setty2016-yh] and DPT [@Haghverdi2016-zt]) being used to investigate
-how genes change across developmental processes. These areas reflect the new
-opportunities for analysis provided by single-cell data that are not possible
-with bulk RNA-seq experiments.
+analysis tools (for example Monocle [@Trapnell2014-he; @Qiu2017-bi;
+@Qiu2017-mq], Wishbone [@Setty2016-yh] and DPT [@Haghverdi2016-zt]) being used
+to investigate how genes change across developmental processes. These areas
+reflect the new opportunities for analysis provided by single-cell data that
+are not possible with bulk RNA-seq experiments.
 
 ```{r make-categories-panel}
 cats.plot <- plotCategories(cat.counts, phase.pal)

@@ -122,7 +122,7 @@ scRNA-seq analysis and records of the growth of the field over time.
 
 # Author summary
 
-In recent years single-cell RNA-sequeing technologies have emerged that allow
+In recent years single-cell RNA-sequencing technologies have emerged that allow
 scientists to measure the activity of genes in thousands of individual cells
 simultaneously. This means we can start to look at what each cell in a sample
 is doing instead of considering an average across all cells in a sample, as was
@@ -134,7 +134,7 @@ is difficult to keep up with what is currently available. To make this easier
 we have developed the scRNA-tools database and website (www.scRNA-tools.org).
 Our database catalogues analysis tools, recording the tasks they can be used
 for, where they can be downloaded from and the publications that describe how
-they work. By looking at this database we can see that developers have focued
+they work. By looking at this database we can see that developers have focused
 on methods specific to single-cell data and that they embrace an open-source
 approach with permissive licensing, sharing of code and preprint publications.
 
@@ -170,6 +170,54 @@ analysis. Through the analysis of this database we show trends in not only the
 analysis applications these methods address but how they are published,
 licensed and the platforms they use. Based on this database we gain insight
 into the current state of current tools in this rapidly developing field.
+
+# Design and implementation
+
+**Database**
+
+When new tools come to our attention they are added to the scRNA-tools database.
+DOIs and publication dates are recorded for any associated publications. As
+preprints may be frequently updated they are marked as a preprint instead
+of recording a date. The platform used to build the tool, links to code
+repositories, associated licenses and a short description are also recorded.
+Each tool is categorised according to the analysis tasks it can perform,
+receiving a true or false for each category based on what is described in the
+accompanying paper or documentation. We also record the date that each entry was
+added to the database and the date that it was last updated.
+
+**Website**
+
+To build the website we start with the table described above as a CSV file
+which is processed using an R script. The lists of packages available in the
+CRAN, Bioconductor, PyPI and Anaconda software repositories are downloaded and
+matched with tools in the database. For tools with associated publications the
+number of citations they have received is retrieved from the Crossref database
+(www.crossref.org) using the rcrossref package
+(v`r packageVersion("rcrossref")`) [@Chamberlain2017-ov]. We also make use of the
+aRxiv package (v`r packageVersion("aRxiv")`) [@Ram2017-mn] to retrieve
+information about arXiv preprints. JSON files describing the complete table,
+tools and categories are outputted and used to populate the website.
+
+The website consists of three main pages. The home page shows an interactive
+table with the ability to sort, filter and download the database. The second
+page shows an entry for each tool, giving the description, details of
+publications, details of the software code and license and the associated
+software categories. Badges are added to tools to provide clearly visible
+details of any associated software or GitHub repositories. The final page
+describes the categories, providing easy access to the tools associated with
+them. An additional page shows a up-to-date version of some of the analysis
+presented here with visulisations produced using ggplot2
+(v`r packageVersion("ggplot2")`) [@Wickham2010-zq] and plotly
+(v`r packageVersion("plotly")`) [@Sievert2017-am].
+
+**Analysis**
+
+The most recent version of the scRNA-tools database as of `r Sys.Date()` was
+used for the analysis presented in this paper. Data was manipulated in R
+(v`r str_extract(R.version.string, "[0-9.]+")`) using the dplyr package
+(v`r packageVersion("dplyr")`) [@Wickham2017-ip] and plots produced using the
+ggplot2 (v`r packageVersion("ggplot2")`) and cowplot
+(v`r packageVersion("cowplot")`) [@Wilke2017-zt] packages.
 
 # Overview of the scRNA-tools database
 
@@ -484,7 +532,7 @@ dominate scRNA-seq analysis we expect to see an increase in methods for
 tackling specialised analyses as researchers continue to push the boundaries of
 what can be observed using scRNA-seq data.
 
-# Discussion
+# Availability and future directions
 
 Since October 2016 we have seen the number of software
 tools for analysing single-cell RNA-seq data almost triple, with more than 200
@@ -521,61 +569,7 @@ support from the community. We hope that it provides a resource for researchers
 to explore when approaching scRNA-seq analyses as well as providing a record of
 the analysis landscape and how it changes over time.
 
-# Methods
-
-**Database**
-
-When new tools come to our attention they are added to the scRNA-tools database.
-DOIs and publication dates are recorded for any associated publications. As
-preprints may be frequently updated they are marked as a preprint instead
-of recording a date. The platform used to build the tool, links to code
-repositories, associated licenses and a short description are also recorded.
-Each tool is categorised according to the analysis tasks it can perform,
-receiving a true or false for each category based on what is described in the
-accompanying paper or documentation. We also record the date that each entry was
-added to the database and the date that it was last updated.
-
-**Website**
-
-To build the website we start with the table described above as a CSV file
-which is processed using an R script. The lists of packages available in the
-CRAN, Bioconductor, PyPI and Anaconda software repositories are downloaded and
-matched with tools in the database. For tools with associated publications the
-number of citations they have received is retrieved from the Crossref database
-(www.crossref.org) using the rcrossref package
-(v`r packageVersion("rcrossref")`) [@Chamberlain2017-ov]. We also make use of the
-aRxiv package (v`r packageVersion("aRxiv")`) [@Ram2017-mn] to retrieve
-information about arXiv preprints. JSON files describing the complete table,
-tools and categories are outputted and used to populate the website.
-
-The website consists of three main pages. The home page shows an interactive
-table with the ability to sort, filter and download the database. The second
-page shows an entry for each tool, giving the description, details of
-publications, details of the software code and license and the associated
-software categories. Badges are added to tools to provide clearly visible
-details of any associated software or GitHub repositories. The final page
-describes the categories, providing easy access to the tools associated with
-them. An additional page shows a up-to-date version of some of the analysis
-presented here with visulisations produced using ggplot2
-(v`r packageVersion("ggplot2")`) [@Wickham2010-zq] and plotly
-(v`r packageVersion("plotly")`) [@Sievert2017-am].
-
-**Analysis**
-
-The most recent version of the scRNA-tools database as of `r Sys.Date()` was
-used for the analysis presented in this paper. Data was manipulated in R
-(v`r str_extract(R.version.string, "[0-9.]+")`) using the dplyr package
-(v`r packageVersion("dplyr")`) [@Wickham2017-ip] and plots produced using the
-ggplot2 (v`r packageVersion("ggplot2")`) and cowplot
-(v`r packageVersion("cowplot")`) [@Wilke2017-zt] packages.
-
-# Declarations
-
-## Ethics
-
-Not applicable.
-
-## Availability of data and materials
+## Availability
 
 The scRNA-tools databases is publicly accessible via the website at www.scRNA-
 tools.org. Suggestions for additions, updates and improvements are warmly
@@ -583,6 +577,12 @@ welcomed at the associated GitHub repository
 (https://github.com/Oshlack/scRNA-tools) or via the submission form on the
 website. The code and datasets used for the analysis in this paper are
 available from https://github.com/Oshlack/scRNAtools-paper.
+
+# Declarations
+
+## Ethics
+
+Not applicable.
 
 ## Competing interests
 

@@ -90,7 +90,7 @@ cats <- read_json("data/descriptions.json", simplifyVector = TRUE) %>%
                                      "Multiple", "Other")))
 
 cat.counts <- tools %>%
-    summarise_at(8:39, sum) %>%
+    summarise_at(7:38, sum) %>%
     gather(key = Category, value = Count) %>%
     arrange(-Count, Category) %>%
     mutate(Prop = Count / nrow(tools)) %>%

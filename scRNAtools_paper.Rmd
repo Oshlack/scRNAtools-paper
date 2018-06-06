@@ -263,16 +263,21 @@ licenses.plot <- plotLicenses(tools, pal)
 platforms.plot <- plotPlatforms(tools, pal)
 
 pub.panel <- plot_grid(pub.plot, pub.time.plot, nrow = 1, ncol = 2,
-                   labels = c("B", "C"))
+                       labels = c("B - Publication status",
+                                  "C - Publication status over time"),
+                       hjust = -0.01)
 plat.panel <- plot_grid(platforms.plot, licenses.plot, nrow = 1, ncol = 2,
-                   labels = c("D", "E"))
+                        labels = c("D - Platforms used by analysis tools",
+                                   "E - Associated software licenses"),
+                        hjust = -0.01)
 panel <- plot_grid(number.plot, pub.panel, plat.panel, nrow = 3, ncol = 1,
-                   labels = c("A", rep("", 4)))
+                   labels = c("A - Increase in tools over time", rep("", 4)),
+                   hjust = -0.01)
 
-save_plot("figures/Fig1_overview_panel.png", panel, nrow = 3, ncol = 2,
-          base_height = 8)
-save_plot("figures/Fig1_overview_panel.eps", panel, nrow = 3, ncol = 2,
-          base_height = 8)
+ggsave("figures/Fig1_overview_panel.png", panel, height = 22.2, width = 19,
+       units = "cm")
+ggsave("figures/Fig1_overview_panel.eps", panel, height = 22.2, width = 19,
+       units = "cm")
 ```
 
 ```{r overview-panel, fig.cap = "(A) Number of tools in the scRNA-tools database over time. Since the scRNA-seq tools database was started in September 2016 more than 130 new tools have been released. (B) Publication status of tools in the scRNA-tools database. Over half of the tools in the full database have at least one published peer-revirew paper while another third are described in preprints. (C) When stratified by the date tools were added to the database we see that the majority of tools added before October 2016 are published, while around half of newer tools are available only as preprints. Newer tools are also more likely to be unpublished in any form. (D) The majority of tools are available using either the R or Python programming languages. (E) Most tools are released under a standard open-source software license, with variants of the GNU Public License (GPL) being the most common. However licenses could not be found for a large proportion of tools. Up-to-date versions of these plots (with the exception of C) are available on the analysis page of the scRNA-tools website."}
@@ -419,16 +424,23 @@ cats.tools.plot <- plotCatsPerTool(tools, pal)
 cats.tools.time.plot <- plotCatsPerToolTime(tools, pal)
 
 cats.panel <- plot_grid(cats.time.plot, phases.date.plot, nrow = 1, ncol = 2,
-                        labels = c("B", "C"))
+                        labels = c("B - Change in analysis categories",
+                                   "C - Analysis phases over time"),
+                        hjust = -0.01)
 tools.panel <- plot_grid(cats.tools.plot, cats.tools.time.plot, nrow = 1,
-                         ncol = 2,labels = c("D", "E"))
-panel <- plot_grid(cats.plot, cats.panel, tools.panel, nrow = 3, ncol = 1,
-                   labels = c("A", rep("", 4)), rel_heights = c(1.2, 1.2, 1))
+                         ncol = 2,
+                         labels = c("D - Number of categories per tool",
+                                    "E - Categories per tool by date added"),
+                         hjust = -0.01)
+panel <- plot_grid(cats.plot, cats.panel, tools.panel,
+                   nrow = 3, ncol = 1, rel_heights = c(1, 1.4, 0.8),
+                   labels = c("A - Analysis categories", rep("", 4)),
+                   hjust = -0.01)
 
-save_plot("figures/Fig3_categories_panel.png", panel, nrow = 3, ncol = 2,
-          base_height = 8)
-save_plot("figures/Fig3_categories_panel.eps", panel, nrow = 3, ncol = 2,
-          base_height = 8)
+ggsave("figures/Fig3_categories_panel.png", panel, height = 22.2, width = 19,
+       units = "cm")
+ggsave("figures/Fig3_categories_panel.eps", panel, height = 22.2, width = 19,
+       units = "cm")
 ```
 
 ```{r categories-panel, fig.cap = "(A) Categories of tools in the scRNA-tools database. Each tool can be assigned to multiple categories based on the tasks it can complete. Categories associated with multiple analysis phases (visualisation, dimensionality reduction) are among the most common, as are categories associated with the cell assignment phase (ordering, clustering). (B) Changes in analysis categories over time, comparing tools added before and after October 2016. There have been significant increases in the percentage of tools associated with visualisation, dimensionality reduction, gene networks and simulation. Categories including expression patterns, ordering and interactivity have seen relative decreases. (C) Changes in the percentage of tools associated with analysis phases over time. The percentage of tools involved in the data acquisition and data cleaning phases have increased, as have tools designed for alternative analysis tasks. The gene identification phase has seen a relative decrease in the number of tools. (D) The number of categories associated with each tools in the scRNA-tools database. The majority of tools perform few tasks. (E) Most tools that complete many tasks are relatively recent."}

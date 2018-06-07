@@ -4,8 +4,9 @@ plotToolsNumber <- function(data.counts, pal) {
         geom_line(size = 2, colour = pal["purple"]) +
         xlab("Date") +
         ylab("Number of tools") +
-        scale_x_date(breaks = scales::pretty_breaks(10)) +
+        scale_x_date(date_breaks = "2 months", date_labels = "%b %Y") +
         #ggtitle("Increase in tools over time") +
+        scale_y_continuous(breaks = seq(50, 250, 25)) +
         ggtitle("") +
         theme_cowplot() +
         theme(plot.title = element_text(size = 14),
@@ -37,7 +38,7 @@ plotPublication <- function(tools, pal) {
         mutate(Cumulative = cumsum(Count),
                Midpoint = max(Cumulative) - (Cumulative - (Count / 2)),
                Label = paste0(Type, "\n",
-                              round(Count / sum(Count) * 100, 1), "%"))
+                              chrRound(Count / sum(Count) * 100, 1), "%"))
 
     pub.plot <- ggplot(plot.data, aes(x = 1, weight = Count, fill = Type)) +
         geom_bar(width = 1, position = "stack") +
@@ -126,7 +127,7 @@ plotLicenses <- function(tools, pal) {
                Cumulative = cumsum(Count),
                Midpoint = Cumulative - (Count / 2),
                Label = paste0(License, "\n",
-                              round(Count / sum(Count) * 100, 1), "%")) %>%
+                              chrRound(Count / sum(Count) * 100, 1), "%")) %>%
         mutate(Midpoint = if_else(License == "Apache", max(Cumulative),
                                   Midpoint),
                Midpoint = if_else(License == "BSD", Midpoint + 10, Midpoint))
@@ -310,7 +311,7 @@ plotPhasesDate <- function(tools, data.counts, pal) {
     phases.data.plot <- ggplot(plot.data,
                                aes(x = Date, y = Prop, colour = Phase)) +
         geom_line(size = 1.2) +
-        scale_x_date(breaks = scales::pretty_breaks(10)) +
+        scale_x_date(date_breaks = "2 months", date_labels = "%b %Y") +
         scale_y_continuous(labels = scales::percent) +
         scale_colour_manual(values = pal) +
         xlab("Date") +

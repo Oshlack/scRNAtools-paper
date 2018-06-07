@@ -56,6 +56,7 @@ library("tidyverse")
 
 ```{r source}
 source("R/plotting.R")
+source("R/utils.R")
 ```
 
 ```{r palette}
@@ -228,7 +229,8 @@ on the scRNA-tools website.
 
 ## Analysis
 
-The most recent version of the scRNA-tools database as of `r Sys.Date()` was
+The most recent version of the scRNA-tools database as of
+`r format(Sys.Date(), format = "%d %B %Y")` was
 used for the analysis presented in this paper. Data was manipulated in R
 (v`r str_extract(R.version.string, "[0-9.]+")`) using the dplyr package
 (v`r packageVersion("dplyr")`) [@Wickham2017-ip] and plots produced using the

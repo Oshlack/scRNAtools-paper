@@ -17,7 +17,7 @@ Data
 The `data` directory contains the following files:
 
 * `descriptions.json` - Descriptions of analysis categories
-* `single_cell_software.csv` - Table of analysis tools
+* `tools-tables.json` - Database of tools
 
 R
 ---
@@ -25,6 +25,7 @@ R
 This directory contains the following functions used in the analysis:
 
 * `plotting.R` - Functions for producing the plots in the paper
+* `utils.R` - Utility functions used in the analysis
 
 Style
 -----
@@ -34,4 +35,3 @@ Style
 * `style.docx` - Reference DOCX style file
 * `style.Rmd` - Reference Rmd style file
 * `style_refs.bib` - Bibligraphy for the reference style
-

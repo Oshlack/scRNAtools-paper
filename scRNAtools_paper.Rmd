@@ -155,10 +155,10 @@ single-cell context [@Stegle2015-mc]. Specifically, scRNA-seq data is extremely
 sparse (there is no expression measured for many genes in most cells), it can
 have technical artefacts such as low-quality cells or differences between
 sequencing batches and the scientific questions of interest are often different
-to those asked of bulk RNA-seq datasets. For example many bulk RNA-seq datasets
-are generated to detect differentially expressed genes through a designed
-experiment while many scRNA-seq experiments aim to identify or classify cell
-types in complex tissues.
+to those asked of bulk RNA-seq datasets. For example, many bulk RNA-seq
+datasets are generated to discover differentially expressed genes through a
+designed experiment while many scRNA-seq experiments aim to identify or
+classify cell types in complex tissues.
 
 The bioinformatics community has embraced this new type of data at an
 astonishing rate, designing a plethora of methods for the analysis of scRNA-seq
@@ -179,9 +179,9 @@ into the current state of current tools in this rapidly developing field.
 ## Database
 
 The scRNA-tools database contains information on software tools specifically
-designed for the analysis of scRNA-seq data. For a tool to be eligible to be
-included in the database it must be available for download and public use. This
-can be from a software package repository (such as Bioconductor
+designed for the analysis of scRNA-seq data. For a tool to be eligible for
+inclusion in the database it must be available for download and public use.
+This can be from a software package repository (such as Bioconductor
 [@Huber2015-lz], CRAN or PyPI), a code sharing website such as GitHub or
 directly from a private website. When new tools come to our attention they are
 added to the scRNA-tools database. DOIs and publication dates are recorded for
@@ -275,7 +275,7 @@ ggsave("figures/Fig1_overview_panel.eps", panel, height = 22.2, width = 19,
        units = "cm")
 ```
 
-```{r overview-panel, fig.cap = "(A) Number of tools in the scRNA-tools database over time. Since the scRNA-seq tools database was started in September 2016 more than 160 new tools have been released. (B) Publication status of tools in the scRNA-tools database. Over half of the tools in the full database have at least one published peer-reviewed paper while another third are described in preprints. (C) When stratified by the date tools were added to the database we see that the majority of tools added before October 2016 are published, while around half of newer tools are available only as preprints. Newer tools are also more likely to be unpublished in any form. (D) The majority of tools are build using either the R or Python programming languages. (E) Most tools are released under a standard open-source software license, with variants of the GNU Public License (GPL) being the most common. However licenses could not be found for a large proportion of tools. Up-to-date versions of these plots (with the exception of C) are available on the analysis page of the scRNA-tools website (https://www.scrna-tools.org/analysis)."}
+```{r overview-panel, fig.cap = "(A) Number of tools in the scRNA-tools database over time. Since the scRNA-seq tools database was started in September 2016 more than 160 new tools have been released. (B) Publication status of tools in the scRNA-tools database. Over half of the tools in the full database have at least one published peer-reviewed paper while another third are described in preprints. (C) When stratified by the date tools were added to the database we see that the majority of tools added before October 2016 are published, while around half of newer tools are available only as preprints. Newer tools are also more likely to be unpublished in any form. (D) The majority of tools are built using either the R or Python programming languages. (E) Most tools are released under a standard open-source software license, with variants of the GNU Public License (GPL) being the most common. However licenses could not be found for a large proportion of tools. Up-to-date versions of these plots (with the exception of C) are available on the analysis page of the scRNA-tools website (https://www.scrna-tools.org/analysis)."}
 include_graphics("figures/Fig1_overview_panel.png")
 ```
 
@@ -283,7 +283,7 @@ include_graphics("figures/Fig1_overview_panel.png")
 
 Most tools have been added to the scRNA-tools database after coming to our
 attention in a publication or preprint describing their method and use. Of all
-the tools in the database about half have at least one publications in a
+the tools in the database about half have at least one publication in a
 peer-reviewed journal and another third are described in preprint articles,
 typically on the bioRxiv preprint server (Fig \@ref(fig:overview-panel)B).
 Tools can be split into those that were available when the database was created
@@ -291,7 +291,7 @@ and those that have been added since. We can see that the majority of older
 tools have been published while more recent tools are more likely to only be
 available as preprints (Fig \@ref(fig:overview-panel)C). This is a good
 demonstration of the delay imposed by the traditional publication process. By
-publishing preprints and releasing software via repositories such as GitHub
+publishing preprints and releasing software via repositories such as GitHub,
 scRNA-seq tool developers make their tools available to the community much
 earlier, allowing them to be used for analysis and their methods improved prior
 to formal publication [@Bourne2017-fc].
@@ -310,7 +310,7 @@ their popularity across a range of data science fields. In particular the
 popularity of R reflects its history as the language of choice for the analysis
 of bulk RNA-seq datasets and a range of other biological data types.
 
-The majority of tools in the scRNA-tools database have chosen to take an
+The majority of tools in the scRNA-tools database have been developed with
 open-source approach, making their code available under permissive software
 licenses (Fig \@ref(fig:overview-panel)E). We feel this reflects the general
 underlying sentiment and willingness of the bioinformatics community to share
@@ -323,9 +323,9 @@ of code for any purpose but without any restrictions on distribution or
 licensing. The appropriate license could not be identified for almost a quarter
 of tools. This is problematic as fellow developers must assume that source code
 cannot be reused, potentially limiting the usefulness of the methods in those
-tools. We strongly encourage tool owners to clearly display their license in
-source code and documentation to provide certainty to the community as to any
-restrictions on the use of their work.
+tools. We strongly encourage tool developers to clearly display their license
+in source code and documentation to provide certainty to the community as to
+any restrictions on the use of their work.
 
 ## Categories of scRNA-seq analysis
 
@@ -363,7 +363,7 @@ biological significance of those genes can then be interpreted to give meaning
 to the experiment, either by investigating the genes themselves or by getting a
 higher level view through techniques such as gene set testing.
 
-```{r analysis-phases, fig.cap = "Phases of a typical unsupervised scRNA-seq analysis process. In Phase 1 (data acquisition) raw sequencing reads are converted into a gene by cell expression matrix. For many protocols this requires the alignment of genes to a reference genome and the assignment and de-duplication of Unique Molecular Identifiers (UMIs). The data is then cleaned (Phase 2) to remove low-quality cells and uninformative genes, resulting in a high-quality dataset for further analysis. The data can also be normalised and missing values imputed during this phase. Phase 3 assigns cells, either in a discrete manner to known (classification) or unknown (clustering) groups or to a position on a continuous trajectory. Interesting genes (eg. differentially expressed, markers, specific patterns of expression) are then identified to explain these groups or trajectories (Phase 4)."}
+```{r analysis-phases, fig.cap = "Phases of a typical unsupervised scRNA-seq analysis process. In Phase 1 (data acquisition) raw sequencing reads are converted into a gene by cell expression matrix. For many protocols this requires the alignment of reads to a reference genome and the assignment and de-duplication of Unique Molecular Identifiers (UMIs). The data is then cleaned (Phase 2) to remove low-quality cells and uninformative genes, resulting in a high-quality dataset for further analysis. The data can also be normalised and missing values imputed during this phase. Phase 3 assigns cells, either in a discrete manner to known (classification) or unknown (clustering) groups or to a position on a continuous trajectory. Interesting genes (eg. differentially expressed, markers, specific patterns of expression) are then identified to explain these groups or trajectories (Phase 4)."}
 include_graphics("figures/Fig2_phase_diagram.png")
 ```
 
@@ -480,12 +480,13 @@ groups has also increased as reference datasets become available and more tools
 are identifying or making use of co-regulated gene networks.
 
 Some categories have seen a decrease in the proportion of tools they represent,
-most strikingly testing for changes expression patterns along a trajectory. This
-is likely related to the change in cell ordering analysis which is the focus of
-a lower percentage  of tools added after October 2016. The ordering of cells
-along a trajectory was one of the first developments in scRNA-seq analysis and a
-decrease in the development of these tools could indicate that researchers have
-moved on to other techniques or that use has converged on a set of mature tools.
+most strikingly testing for changes expression patterns along a trajectory.
+This is likely related to the change in cell ordering analysis which is the
+focus of a lower percentage of tools added after October 2016. The ordering of
+cells along a trajectory was one of the first developments in scRNA-seq
+analysis and a decrease in the development of these tools could indicate that
+researchers have moved on to other techniques or that use has converged on a
+set of mature tools.
 
 By grouping categories based on their associated analysis phases we see similar
 trends over time (Fig \@ref(fig:categories-panel)C). We see increases in the
@@ -514,13 +515,13 @@ range of complex analyses starting with a gene expression matrix. Most of the
 tools that complete many tasks are relatively more recent (Fig
 \@ref(fig:categories-panel)E). Being able to complete multiple tasks using a
 single tool can simplify analysis as problems with converting between different
-data formats can be avoided, however it is important to remember that it is
+data formats can be avoided. However it is important to remember that it is
 difficult for a tool with many functionalities to continue to represent the
 state of the art in all of them. Support for common data formats, such as the
 recently released SingleCellExperiment [@Lun2017-jj], anndata [@Wolf2018-na] or
 loom (http://loompy.org/) objects provides another way for developers to allow
-easy use of their tools and for users to build custom workflows from specialised
-tools.
+easy use of their tools and for users to build custom workflows from
+specialised tools.
 
 ### Alternative analyses
 
@@ -542,34 +543,34 @@ what can be observed using scRNA-seq data.
 # Availability and future directions
 
 Since October 2016 we have seen the number of software tools for analysing
-single-cell RNA-seq data more than triple, with more than 230 analysis tools now
-available. As new tools have become available we have curated and catalogued
-them in the scRNA-tools database where we record the analysis tasks that they
-can complete, along with additional information such as any associated
-publications. By analysing this database we have found that tool developers
-have focused much of their efforts on methods for handling new problems
-specific to scRNA-seq data, in particular clustering cells into groups or
-ordering them along a trajectory. We have also seen that the scRNA-seq
+single-cell RNA-seq data more than triple, with more than 230 analysis tools
+now available. As new tools have become available we have curated and
+catalogued them in the scRNA-tools database where we record the analysis tasks
+that they can complete, along with additional information such as any
+associated publications. By analysing this database we have found that tool
+developers have focused much of their efforts on methods for handling new
+problems specific to scRNA-seq data, in particular clustering cells into groups
+or ordering them along a trajectory. We have also seen that the scRNA-seq
 community is generally open and willing to share their methods which are often
 described in preprints prior to peer-reviewed publication and released under
 permissive open-source licenses for other researchers to re-use.
 
-The next few years promise to continue to produce significant new developments
-in scRNA-seq analysis. New tools will continue to be produced, becoming
-increasingly sophisticated and aiming to address more of the questions made
-possible by scRNA-seq data. We anticipate that some existing tools will continue
-to improve and expand their functionality while others will cease to be updated
-and maintained. Detailed benchmarking and comparisons will show how tools
-perform in different situations and those that perform well, continue to be
-developed and provide a good user experience will become preferred for standard
-analyses. As single-cell capture and sequencing technology continues to improve
-analysis tools will have to adapt to significantly larger datasets (in the
-millions of cells) which may require specialised data structures and algorithms.
-Methods for combining multiple scRNA-seq datasets as well as integration of
-scRNA-seq data with other single-cell data types, such as DNA-seq, ATAC-seq or
-methylation, will be another area of growth and projects such as the Human Cell
-Atlas [@Regev2017-wg] will provide comprehensive cell type references which will
-open up new avenues for analysis.
+The next few years promise to produce significant new developments in scRNA-seq
+analysis. New tools will continue to be produced, becoming increasingly
+sophisticated and aiming to address more of the questions made possible by
+scRNA-seq data. We anticipate that some existing tools will continue to improve
+and expand their functionality while others will cease to be updated and
+maintained. Detailed benchmarking and comparisons will show how tools perform
+in different situations and those that perform well, continue to be developed
+and provide a good user experience will become preferred for standard analyses.
+As single-cell capture and sequencing technology continues to improve analysis
+tools will have to adapt to significantly larger datasets (in the millions of
+cells) which may require specialised data structures and algorithms. Methods
+for combining multiple scRNA-seq datasets as well as integration of scRNA-seq
+data with other single-cell data types, such as DNA-seq, ATAC-seq or
+methylation, will be another area of growth. In addition, projects such as the
+Human Cell Atlas [@Regev2017-wg] will provide comprehensive cell type
+references which will open up new avenues for analysis.
 
 As the field expands the scRNA-tools database will continue to be updated with
 support from the community. We hope that it provides a resource for researchers
@@ -579,7 +580,7 @@ the analysis landscape and how it changes over time.
 ## Availability
 
 The scRNA-tools databases is publicly accessible via the website at
-www.scRNA- tools.org. Suggestions for additions, updates and improvements are 
+www.scRNA- tools.org. Suggestions for additions, updates and improvements are
 warmly welcomed at the associated GitHub repository
 (https://github.com/Oshlack/scRNA-tools) or via the submission form on the
 website. The code and datasets used for the analysis in this paper are
@@ -588,9 +589,9 @@ available from https://github.com/Oshlack/scRNAtools-paper.
 # Acknowledgements
 
 We would like to acknowledge Sean Davis' work in managing the
-awesome-single-cell page and producing a prototype of the script used to process
-the database. Daniel Wells had the idea for recording software licenses and
-provided licenses for the tools in the database at that time. Breon Schmidt
+awesome-single-cell page and producing a prototype of the script used to
+process the database. Daniel Wells had the idea for recording software licenses
+and provided licenses for the tools in the database at that time. Breon Schmidt
 designed a prototype of the scRNA-tools website and answered many questions
 about HTML and Javascript. Our thanks also to Matt Ritchie for his thoughts on
 early versions of the manuscript.
